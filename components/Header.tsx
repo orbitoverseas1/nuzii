@@ -6,7 +6,7 @@ import Container from "./Container";
 import { getAllCategories, getMyOrders } from "@/sanity/helpers";
 import HeaderMenu from "./new/HeaderMenu";
 import Logo from "./new/Logo";
-import { ListOrdered } from "lucide-react";
+import { ListOrdered, User } from "lucide-react";
 import CartIcon from "./new/CartIcon";
 import MobileMenu from "./new/MobileMenu";
 import SearchBar from "./new/SearchBar";
@@ -21,34 +21,53 @@ const Header = async () => {
   const categories = await getAllCategories(3);
 
   return (
-    <header className="bg-white sticky top-0 z-50 border-b border-b-gray-200 py-5">
-      <Container className="flex items-center justify-between gap-7 text-lightColor">
-        <HeaderMenu categories={categories} />
-        <div className="w-auto md:w-1/3 flex items-center justify-center gap-2.5">
-          <MobileMenu categories={categories} />
-          <Logo>NUZII</Logo>
+    <header className="bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-nuziiRoseGold/20 py-4 transition-all duration-300">
+      <Container className="flex items-center justify-between gap-4">
+        {/* Left: Navigation Menu */}
+        <div className="hidden md:block w-1/3">
+          <HeaderMenu categories={categories} />
         </div>
-        <div className="w-auto md:w-1/3 flex items-center justify-end gap-5">
+
+        {/* Mobile Menu Trigger (Visible on mobile only) */}
+        <div className="md:hidden w-1/3">
+          <MobileMenu categories={categories} />
+        </div>
+
+        {/* Center: Logo */}
+        <div className="w-1/3 flex justify-center">
+          <Logo className="text-3xl tracking-[0.2em] font-light">NUZII</Logo>
+        </div>
+
+        {/* Right: Utility Icons */}
+        <div className="w-1/3 flex items-center justify-end gap-6">
           <SearchBar />
+
           <CartIcon />
-          <SignedIn>
-            <Link href={"/orders"} className="group relative">
-              <ListOrdered className="group-hover:text-darkColor hoverEffect" />
-              <span className="absolute -top-1 -right-1 bg-darkColor text-white h-3.5 w-3.5 rounded-full text-xs font-semibold flex items-center justify-center">
-                {orders?.length ? orders?.length : 0}
-              </span>
-            </Link>
-          </SignedIn>
+
           <ClerkLoaded>
             <SignedIn>
-              <UserButton />
+              <Link href={"/orders"} className="group relative text-nuziiText hover:text-nuziiRoseGoldDark transition-colors">
+                <ListOrdered className="w-5 h-5" />
+                {orders && orders.length > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-nuziiRoseGold text-white h-4 w-4 rounded-full text-[10px] font-medium flex items-center justify-center">
+                    {orders.length}
+                  </span>
+                )}
+              </Link>
+              <UserButton
+                appearance={{
+                  elements: {
+                    avatarBox: "w-8 h-8 border border-nuziiRoseGold/30"
+                  }
+                }}
+              />
             </SignedIn>
             {!user && (
               <Link
                 href="/signin"
-                className="text-sm font-semibold hover:text-darkColor hoverEffect"
+                className="text-nuziiText hover:text-nuziiRoseGoldDark transition-colors"
               >
-                Login
+                <User className="w-5 h-5" />
               </Link>
             )}
           </ClerkLoaded>
