@@ -8,7 +8,7 @@ const NotFoundPage = () => {
       <div className="h-full min-h-screen flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 ">
         <div className="max-w-md w-full space-y-8">
           <div className="text-center">
-            <Logo>NUZI</Logo>
+            <Logo>NUZII</Logo>
 
             <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
               Looking for something?
@@ -24,7 +24,7 @@ const NotFoundPage = () => {
                 href="/"
                 className="w-full flex items-center justify-center px-4 py-2 border border-transparent text-sm font-semibold rounded-md text-white bg-darkBlue/80 hover:bg-darkBlue focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-amazonOrangeDark hoverEffect"
               >
-                Go to NUZI&apos;s home page
+                Go to NUZII&apos;s home page
               </Link>
               <Link
                 href="/help"

@@ -20,9 +20,8 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, categories }) => {
 
   return (
     <div
-      className={`fixed inset-y-0 left-0 z-50 w-full bg-darkColor/50 shadow-xl transform ${
-        isOpen ? "translate-x-0" : "-translate-x-full"
-      } transition-transform ease-in-out duration-300`}
+      className={`fixed inset-y-0 left-0 z-50 w-full bg-darkColor/50 shadow-xl transform ${isOpen ? "translate-x-0" : "-translate-x-full"
+        } transition-transform ease-in-out duration-300`}
     >
       <motion.div
         initial={{ opacity: 0 }}
@@ -32,7 +31,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, categories }) => {
         className="min-w-72 max-w-96 bg-darkColor h-full text-primary-foreground p-10 border-r border-r-hoverColor/30 flex flex-col gap-6"
       >
         <div className="flex items-center justify-between">
-          <Logo className="text-white">NUZI</Logo>
+          <Logo className="text-white">NUZII</Logo>
           <button
             onClick={onClose}
             className="hover:text-red-500 hoverEffect cursor-pointer"
@@ -44,9 +43,8 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, categories }) => {
           <Link
             onClick={onClose}
             href={"/"}
-            className={`hover:text-white hoverEffect ${
-              pathname === `/` && "text-white"
-            }`}
+            className={`hover:text-white hoverEffect ${pathname === `/` && "text-white"
+              }`}
           >
             Home
           </Link>
@@ -55,9 +53,8 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, categories }) => {
               onClick={onClose}
               key={item?.title}
               href={`/category/${item?.slug?.current}`}
-              className={`hover:text-white hoverEffect ${
-                pathname === `/category/${item?.slug?.current}` && "text-white"
-              }`}
+              className={`hover:text-white hoverEffect ${pathname === `/category/${item?.slug?.current}` && "text-white"
+                }`}
             >
               {item?.title}
             </Link>

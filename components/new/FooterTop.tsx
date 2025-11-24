@@ -30,7 +30,7 @@ const data: ContactItemData[] = [
   },
   {
     title: "Email Us",
-    subtitle: "NUZI@gmail.com",
+    subtitle: "NUZII@gmail.com",
     icon: (
       <Mail className="h-6 w-6 text-gray-600 group-hover:text-darkColor transition-colors" />
     ),
