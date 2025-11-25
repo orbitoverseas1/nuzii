@@ -91,6 +91,35 @@ export const productType = defineType({
         ],
       },
     }),
+    defineField({
+      name: "isBestSelling",
+      title: "Best Selling",
+      type: "boolean",
+      description: "Mark as best selling product",
+      initialValue: false,
+    }),
+    defineField({
+      name: "isTopRated",
+      title: "Top Rated",
+      type: "boolean",
+      description: "Mark as top rated product",
+      initialValue: false,
+    }),
+    defineField({
+      name: "rating",
+      title: "Product Rating",
+      type: "number",
+      validation: (Rule) => Rule.min(0).max(5),
+      description: "Rating from 0 to 5",
+    }),
+    defineField({
+      name: "salesCount",
+      title: "Sales Count",
+      type: "number",
+      validation: (Rule) => Rule.min(0),
+      description: "Total number of sales (for sorting best sellers)",
+      initialValue: 0,
+    }),
   ],
   preview: {
     select: {
