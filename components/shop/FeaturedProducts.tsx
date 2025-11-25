@@ -3,8 +3,9 @@
 import { useState } from "react";
 import ProductCard from "@/components/ProductCard";
 import { motion, AnimatePresence } from "motion/react";
+import { Product } from "@/sanity.types";
 
-interface Product {
+interface ProductLocal {
     _id: string;
     name: string;
     slug: { current: string };
@@ -21,9 +22,9 @@ interface Product {
 }
 
 interface FeaturedProductsProps {
-    newArrivals: Product[];
-    bestSelling: Product[];
-    topRated: Product[];
+    newArrivals: ProductLocal[];
+    bestSelling: ProductLocal[];
+    topRated: ProductLocal[];
 }
 
 type TabType = "new" | "best" | "top";
@@ -83,7 +84,7 @@ export default function FeaturedProducts({
                         className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
                     >
                         {currentProducts?.slice(0, 12).map((product) => (
-                            <ProductCard key={product._id} product={product as any} />
+                            <ProductCard key={product._id} product={product as Product} />
                         ))}
                     </motion.div>
                 </AnimatePresence>

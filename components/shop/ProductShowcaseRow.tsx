@@ -1,5 +1,6 @@
 import Link from "next/link";
 import ProductCard from "@/components/ProductCard";
+import { Product } from "@/sanity.types";
 
 interface ProductShowcaseRowProps {
     showcases: Array<{
@@ -63,7 +64,7 @@ export default function ProductShowcaseRow({ showcases }: ProductShowcaseRowProp
                             {/* Products Grid - 4 columns */}
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
                                 {showcase.products?.slice(0, 4).map((product) => (
-                                    <ProductCard key={product._id} product={product as any} />
+                                    <ProductCard key={product._id} product={product as Product} />
                                 ))}
                             </div>
 

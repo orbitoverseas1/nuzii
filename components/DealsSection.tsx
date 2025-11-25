@@ -26,7 +26,7 @@ const DealsSection = () => {
       }
     };
     fetchData();
-  }, []);
+  }, [query]);
 
   return (
     <Container className="">
