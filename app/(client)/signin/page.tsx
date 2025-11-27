@@ -88,7 +88,7 @@ const SignInPage = () => {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-nuziiRoseGold hover:bg-nuziiRoseGoldDark text-white font-medium py-3 rounded-lg transition-colors flex items-center justify-center"
+            className="w-full bg-nuziiRoseGold hover:bg-nuziiRoseGoldDark hover:cursor-pointer text-white font-medium py-3 rounded-lg transition-colors flex items-center justify-center"
           >
             {isLoading ? (
               <Loader2 className="w-5 h-5 animate-spin" />
@@ -113,7 +113,7 @@ const SignInPage = () => {
           <button
             onClick={handleGoogleLogin}
             type="button"
-            className="mt-6 w-full border border-nuziiSand hover:bg-nuziiCream/30 text-nuziiText font-medium py-3 rounded-lg transition-colors flex items-center justify-center gap-2"
+            className="mt-6 w-full border border-nuziiSand hover:bg-nuziiCream/30 hover:cursor-pointer text-nuziiText font-medium py-3 rounded-lg transition-colors flex items-center justify-center gap-2"
           >
             <svg className="w-5 h-5" viewBox="0 0 24 24">
               <path
