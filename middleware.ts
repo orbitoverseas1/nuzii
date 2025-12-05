@@ -1,27 +1,13 @@
-import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 
-// Create route matchers for protected routes
-const isProtectedRoute = createRouteMatcher([
-  "/admin(.*)",
-  "/account(.*)",
-  "/cart(.*)",
-  "/wishlist(.*)",
-]);
-
-export default clerkMiddleware(async (auth, req) => {
-  const authObject = await auth();
-
-  if (isProtectedRoute(req) && !authObject.userId) {
-    const signInUrl = new URL(
-      `/signin?redirect_url=${req.nextUrl.pathname}`,
-      req.url
-    );
-    return NextResponse.redirect(signInUrl);
-  }
+export function middleware(request: NextRequest) {
+  // For now, we are relying on client-side protection because Firebase Client SDK
+  // handles auth state best on the client.
+  // We can implement session cookie verification here later if needed for strict server-side protection.
 
   return NextResponse.next();
-});
+}
 
 export const config = {
   matcher: [

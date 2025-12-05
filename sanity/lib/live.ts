@@ -6,14 +6,15 @@ import { client } from "./client";
 
 const token = process.env.SANITY_API_READ_TOKEN;
 
-if (!token) {
+// Only require token on server-side
+if (!token && typeof window === 'undefined') {
   throw new Error("Missing SANITY_API_READ_TOKEN");
 }
 
 export const { sanityFetch, SanityLive } = defineLive({
   client,
   serverToken: token,
-  browserToken: token,
+  browserToken: undefined, // Don't expose token to browser
   fetchOptions: {
     revalidate: 0,
   },

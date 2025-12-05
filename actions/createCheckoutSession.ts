@@ -9,7 +9,7 @@ export interface Metadata {
   orderNumber: string;
   customerName: string;
   customerEmail: string;
-  clerkUserId: string;
+  userId: string;
 }
 
 export interface GroupedCartItems {
@@ -22,6 +22,11 @@ export async function createCheckoutSession(
   metadata: Metadata
 ) {
   try {
+    // Check if Stripe is configured
+    if (!stripe) {
+      throw new Error("Stripe is not configured. Please add STRIPE_SECRET_KEY to your environment variables.");
+    }
+
     // Validate if any grouped items don't have a price
     const itemsWithoutPrice = items.filter((item) => !item.product.price);
     if (itemsWithoutPrice.length > 0) {
@@ -41,7 +46,7 @@ export async function createCheckoutSession(
         orderNumber: metadata.orderNumber,
         customerName: metadata.customerName,
         customerEmail: metadata.customerEmail,
-        clerkUserId: metadata.clerkUserId,
+        userId: metadata.userId,
       },
       mode: "payment",
       allow_promotion_codes: true,
@@ -49,12 +54,10 @@ export async function createCheckoutSession(
       invoice_creation: {
         enabled: true,
       },
-      success_url: `${
-        process.env.NEXT_PUBLIC_BASE_URL || `https://${process.env.VERCEL_URL}`
-      }/success?session_id={CHECKOUT_SESSION_ID}&orderNumber=${metadata.orderNumber}`,
-      cancel_url: `${
-        process.env.NEXT_PUBLIC_BASE_URL || `https://${process.env.VERCEL_URL}`
-      }/cart`,
+      success_url: `${process.env.NEXT_PUBLIC_BASE_URL || `https://${process.env.VERCEL_URL}`
+        }/success?session_id={CHECKOUT_SESSION_ID}&orderNumber=${metadata.orderNumber}`,
+      cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL || `https://${process.env.VERCEL_URL}`
+        }/cart`,
       line_items: items.map((item) => ({
         price_data: {
           currency: "USD",

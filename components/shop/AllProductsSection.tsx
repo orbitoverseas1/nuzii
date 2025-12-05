@@ -5,7 +5,6 @@ import { client } from "@/sanity/lib/client";
 import ProductCard from "@/components/ProductCard";
 import { motion, AnimatePresence } from "motion/react";
 import { ChevronDown, Loader2 } from "lucide-react";
-import { Product } from "@/sanity.types";
 
 interface AllProductsSectionProps {
     categories: Array<{
@@ -13,7 +12,8 @@ interface AllProductsSectionProps {
         title: string;
         slug: { current: string };
     }>;
-    initialProducts: Product[];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    initialProducts: any[];
 }
 
 export default function AllProductsSection({
@@ -142,8 +142,10 @@ export default function AllProductsSection({
                             transition={{ duration: 0.3 }}
                             className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
                         >
-                            {products.map((product) => (
-                                <ProductCard key={product._id} product={product} />
+                            {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                            {products.map((product: any) => (
+                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                <ProductCard key={product._id} product={product as any} />
                             ))}
                         </motion.div>
                     </AnimatePresence>

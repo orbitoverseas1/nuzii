@@ -1,23 +1,22 @@
 import Link from "next/link";
 import React from "react";
-import { ClerkLoaded, SignedIn, UserButton } from "@clerk/nextjs";
-import { auth, currentUser } from "@clerk/nextjs/server";
 import Container from "./Container";
-import { getAllCategories, getMyOrders } from "@/sanity/helpers";
+import { getAllCategories } from "@/sanity/helpers";
 import HeaderMenu from "./new/HeaderMenu";
 import Logo from "./new/Logo";
-import { ListOrdered, User } from "lucide-react";
+import { ListOrdered } from "lucide-react";
 import CartIcon from "./new/CartIcon";
 import MobileMenu from "./new/MobileMenu";
 import SearchBar from "./new/SearchBar";
+import UserMenu from "./new/UserMenu";
 
 const Header = async () => {
-  const user = await currentUser();
-  const { userId } = await auth();
-  let orders = null;
-  if (userId) {
-    orders = await getMyOrders(userId);
-  }
+  // Orders fetching will need to be moved to a client component or handled differently with Firebase
+  // For now, we'll pass null and handle it in the client component if possible, 
+  // or we can't fetch orders server-side easily without cookies.
+  // Let's assume for now we just render the header and orders will be fetched client-side or we'll fix this later.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const orders: any[] = [];
   const categories = await getAllCategories(3);
 
   return (
@@ -44,33 +43,16 @@ const Header = async () => {
 
           <CartIcon />
 
-          <ClerkLoaded>
-            <SignedIn>
-              <Link href={"/orders"} className="group relative text-nuziiText hover:text-nuziiRoseGoldDark transition-colors">
-                <ListOrdered className="w-5 h-5" />
-                {orders && orders.length > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-nuziiRoseGold text-white h-4 w-4 rounded-full text-[10px] font-medium flex items-center justify-center">
-                    {orders.length}
-                  </span>
-                )}
-              </Link>
-              <UserButton
-                appearance={{
-                  elements: {
-                    avatarBox: "w-8 h-8 border border-nuziiRoseGold/30"
-                  }
-                }}
-              />
-            </SignedIn>
-            {!user && (
-              <Link
-                href="/signin"
-                className="text-nuziiText hover:text-nuziiRoseGoldDark transition-colors"
-              >
-                <User className="w-5 h-5" />
-              </Link>
+          <Link href={"/orders"} className="hidden md:block group relative text-nuziiText hover:text-nuziiRoseGoldDark transition-colors">
+            <ListOrdered className="w-5 h-5" />
+            {orders && orders.length > 0 && (
+              <span className="absolute -top-2 -right-2 bg-nuziiRoseGold text-white h-4 w-4 rounded-full text-[10px] font-medium flex items-center justify-center">
+                {orders.length}
+              </span>
             )}
-          </ClerkLoaded>
+          </Link>
+
+          <UserMenu />
         </div>
       </Container>
     </header>

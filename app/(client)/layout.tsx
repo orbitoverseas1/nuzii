@@ -7,6 +7,7 @@ import { VisualEditing } from "next-sanity";
 import { draftMode } from "next/headers";
 import DisableDraftMode from "@/components/DisableDraftMode";
 import ChatIcon from "@/components/new/ChatIcon";
+import { AuthProvider } from "@/context/AuthContext";
 
 export const metadata: Metadata = {
   title: "NUZII",
@@ -19,27 +20,29 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div>
-      {(await draftMode()).isEnabled && (
-        <>
-          <DisableDraftMode />
-          <VisualEditing />
-        </>
-      )}
-      <Header />
-      {children}
-      <Footer />
-      <Toaster
-        position="bottom-right"
-        toastOptions={{
-          style: {
-            background: "#000000",
-            color: "#fff",
-          },
-        }}
-      />
-      <SanityLive />
-      <ChatIcon />
-    </div>
+    <AuthProvider>
+      <div>
+        {(await draftMode()).isEnabled && (
+          <>
+            <DisableDraftMode />
+            <VisualEditing />
+          </>
+        )}
+        <Header />
+        {children}
+        <Footer />
+        <Toaster
+          position="bottom-right"
+          toastOptions={{
+            style: {
+              background: "#000000",
+              color: "#fff",
+            },
+          }}
+        />
+        <SanityLive />
+        <ChatIcon />
+      </div>
+    </AuthProvider>
   );
 }

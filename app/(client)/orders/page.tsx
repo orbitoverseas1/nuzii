@@ -1,23 +1,56 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import Container from "@/components/Container";
 import OrdersComponent from "@/components/OrdersComponent";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Table, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { getMyOrders } from "@/sanity/helpers";
-import { auth } from "@clerk/nextjs/server";
-import { FileX } from "lucide-react";
+import { getMyOrders } from "@/sanity/helpers/client";
+import { FileX, Loader2 } from "lucide-react";
 import Link from "next/link";
-import { redirect } from "next/navigation";
-import React from "react";
+import { useAuth } from "@/context/AuthContext";
+import { MY_ORDERS_QUERYResult } from "@/sanity.types";
 
-const OrdersPage = async () => {
-  const { userId } = await auth();
-  if (!userId) {
-    return redirect("/");
+const OrdersPage = () => {
+  const { user, loading } = useAuth();
+  const router = useRouter();
+  const [orders, setOrders] = useState<MY_ORDERS_QUERYResult>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push("/signin");
+      return;
+    }
+
+    const fetchOrders = async () => {
+      if (user?.uid) {
+        try {
+          const fetchedOrders = await getMyOrders(user.uid);
+          setOrders(fetchedOrders);
+        } catch (error) {
+          console.error("Error fetching orders:", error);
+        } finally {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    if (user) {
+      fetchOrders();
+    }
+  }, [user, loading, router]);
+
+  if (loading || isLoading) {
+    return (
+      <Container className="py-10 flex items-center justify-center min-h-[50vh]">
+        <Loader2 className="w-8 h-8 animate-spin text-nuziiRoseGold" />
+      </Container>
+    );
   }
-
-  const orders = await getMyOrders(userId);
 
   return (
     <div>

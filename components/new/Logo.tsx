@@ -1,10 +1,10 @@
 import { cn } from "@/lib/utils";
 import Link from "next/link";
-import Image from "next/image";
 import React from "react";
+import Image from "next/image";
+
 interface Props {
   className?: string;
-  children?: React.ReactNode;
 }
 
 const Logo = ({ className }: Props) => {
@@ -15,8 +15,9 @@ const Logo = ({ className }: Props) => {
           src="/images/nuzi-logo.png"
           alt="Nuzii Logo"
           width={96}
-          height={96}
+          height={40}
           className="w-full h-full object-contain"
+          priority
         />
       </div>
     </Link>
