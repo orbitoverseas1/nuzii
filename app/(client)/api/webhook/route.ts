@@ -30,6 +30,16 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  if (!stripe) {
+    console.log("Stripe is not configured");
+    return NextResponse.json(
+      {
+        error: "Stripe is not configured",
+      },
+      { status: 400 }
+    );
+  }
+
   let event: Stripe.Event;
 
   try {
@@ -86,6 +96,10 @@ async function createOrderInSanity(
 
   const { orderNumber, customerName, customerEmail, userId } =
     metadata as unknown as Metadata;
+
+  if (!stripe) {
+    throw new Error("Stripe is not configured");
+  }
 
   const lineItemsWithProduct = await stripe.checkout.sessions.listLineItems(
     id,
