@@ -1,154 +1,134 @@
+"use client";
+
+import React, { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import useEmblaCarousel from "embla-carousel-react";
+import Autoplay from "embla-carousel-autoplay";
+import { motion } from "framer-motion";
+
+const CAROUSEL_IMAGES = [
+ 
+    {
+        id: 1,
+        src: "/images/landing/bg-carousel.png",
+        alt: "Timeless style",
+    },
+    {
+        id: 2,
+        src: "/images/landing/bg-carousel-2.png",
+        alt: "Modern elegance",
+    },
+    {
+        id: 3,
+        src: "/images/landing/bg-carousel-3.png",
+        alt: "Modern elegance",
+    },
+];
 
 export default function Hero() {
+    const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, duration: 60 }, [
+        Autoplay({ delay: 5000, stopOnInteraction: false }),
+    ]);
+    const [selectedIndex, setSelectedIndex] = useState(0);
+
+    const onSelect = useCallback(() => {
+        if (!emblaApi) return;
+        setSelectedIndex(emblaApi.selectedScrollSnap());
+    }, [emblaApi]);
+
+    useEffect(() => {
+        if (!emblaApi) return;
+        onSelect();
+        emblaApi.on("select", onSelect);
+        return () => {
+            emblaApi.off("select", onSelect);
+        };
+    }, [emblaApi, onSelect]);
+
     return (
-        <section className="relative w-full min-h-[90vh] flex items-center justify-center overflow-hidden bg-nuziiCream">
-            {/* Abstract Curved Background Shapes */}
-            <div className="absolute inset-0 z-0">
-                {/* Large curved shape - bottom left */}
-                <svg
-                    className="absolute -bottom-20 -left-32 w-[800px] h-[800px] opacity-60"
-                    viewBox="0 0 800 800"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                >
-                    <path
-                        d="M0 400C0 179.086 179.086 0 400 0C620.914 0 800 179.086 800 400C800 620.914 620.914 800 400 800C179.086 800 0 620.914 0 400Z"
-                        fill="#E0BFB8"
-                        fillOpacity="0.3"
-                    />
-                    <path
-                        d="M100 500C100 279.086 279.086 100 500 100C720.914 100 900 279.086 900 500"
-                        stroke="#C8A6A0"
-                        strokeWidth="2"
-                        strokeOpacity="0.2"
-                    />
-                </svg>
-
-                {/* Curved shape - top right */}
-                <svg
-                    className="absolute -top-40 -right-40 w-[700px] h-[700px] opacity-50"
-                    viewBox="0 0 700 700"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                >
-                    <path
-                        d="M350 0C543.3 0 700 156.7 700 350C700 543.3 543.3 700 350 700C156.7 700 0 543.3 0 350C0 156.7 156.7 0 350 0Z"
-                        fill="#F5F1EA"
-                        fillOpacity="0.5"
-                    />
-                    <ellipse
-                        cx="350"
-                        cy="200"
-                        rx="200"
-                        ry="150"
-                        fill="#E0BFB8"
-                        fillOpacity="0.2"
-                    />
-                </svg>
-
-                {/* Flowing curved wave - middle */}
-                <svg
-                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full opacity-40"
-                    viewBox="0 0 1200 800"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                    preserveAspectRatio="none"
-                >
-                    <path
-                        d="M0 400 Q 300 200, 600 400 T 1200 400 L 1200 800 L 0 800 Z"
-                        fill="#E0BFB8"
-                        fillOpacity="0.15"
-                    />
-                    <path
-                        d="M0 500 Q 400 300, 800 500 T 1600 500"
-                        stroke="#C8A6A0"
-                        strokeWidth="3"
-                        strokeOpacity="0.2"
-                        fill="none"
-                    />
-                </svg>
-
-                {/* Small accent curves */}
-                <svg
-                    className="absolute top-1/4 right-1/4 w-[300px] h-[300px] opacity-30"
-                    viewBox="0 0 300 300"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                >
-                    <circle cx="150" cy="150" r="100" fill="#D8CFC4" fillOpacity="0.3" />
-                    <circle cx="180" cy="120" r="60" fill="#F5F1EA" fillOpacity="0.4" />
-                </svg>
-            </div>
-
-            {/* Content Container */}
-            <div className="relative z-10 container mx-auto px-6 md:px-12 py-20">
-                <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center max-w-7xl mx-auto">
-                    {/* Left Column - Text Content */}
-                    <div className="space-y-8 order-1 lg:order-1">
-                        <div className="space-y-6">
-
-                            <h1 className="text-5xl md:text-7xl font-light tracking-tight text-nuziiText leading-[1.1]">
-                                Elevate Your <br />
-                                <span className="font-medium text-nuziiRoseGoldDark">Everyday Style</span>
-                            </h1>
-                            <p className="text-lg md:text-xl text-nuziiTextLight font-light max-w-md">
-                                Modest friendly fashion that feels premium without the high price.
-                                Timeless pieces for the modern woman.
-                            </p>
+        <section className="relative w-full h-[85vh] overflow-hidden bg-nuziiCream">
+            {/* Carousel Background */}
+            <div className="absolute inset-0 z-0" ref={emblaRef}>
+                <div className="flex h-full">
+                    {CAROUSEL_IMAGES.map((image, index) => (
+                        <div key={image.id} className="relative flex-[0_0_100%] h-full min-w-0">
+                            <Image
+                                src={image.src}
+                                alt={image.alt}
+                                fill
+                                className="object-cover"
+                                priority={index === 0}
+                            />
+                            {/* Dark Overlay for better text visibility */}
+                            <div className="absolute inset-0 bg-black/30" />
                         </div>
-
-                        {/* CTA Button */}
-                        <div className="pt-2">
-                            <Link
-                                href="/shop"
-                                className="group inline-flex items-center gap-2 px-8 py-4 bg-nuziiRoseGold hover:bg-nuziiRoseGoldDark text-white rounded-full transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
-                            >
-                                Shop Now
-                            </Link>
-                        </div>
-
-                        {/* Decorative text elements */}
-                        <div className="pt-6 space-y-3">
-                            <div className="flex items-center gap-3 text-nuziiTextLight">
-                                <div className="w-12 h-[1px] bg-nuziiSand"></div>
-                                <p className="text-sm font-light tracking-wide">Modest • Timeless • Elegant</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Right Column - Image with Organic Shape */}
-                    <div className="relative order-1 lg:order-2">
-                        <div className="relative w-full aspect-[3/4] max-w-lg mx-auto lg:ml-auto">
-                            {/* Organic blob shape using clip-path */}
-                            <div
-                                className="w-full h-full rounded-[40% 60% 70% 30% / 40% 50% 60% 50%] overflow-hidden shadow-2xl relative"
-                                style={{
-                                    clipPath:
-                                        "polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%)",
-                                }}
-                            >
-                                <Image
-                                    src="/images/landing/hero-woman.png"
-                                    alt="Nuzii Modest Fashion"
-                                    fill
-                                    className="object-cover"
-                                    priority
-                                />
-                            </div>
-
-                            {/* Decorative floating elements around image */}
-                            <div className="absolute -top-6 -right-6 w-32 h-32 bg-nuziiRoseGold/20 rounded-full blur-2xl"></div>
-                            <div className="absolute -bottom-8 -left-8 w-40 h-40 bg-nuziiBeige/60 rounded-full blur-3xl"></div>
-                            <div className="absolute top-1/2 -right-4 w-24 h-24 bg-nuziiSand/30 rounded-full blur-xl"></div>
-                        </div>
-                    </div>
+                    ))}
                 </div>
             </div>
 
-            {/* Subtle overlay for depth */}
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-nuziiCream/20 pointer-events-none"></div>
+            {/* Content Overlay */}
+            <div className="absolute inset-0 z-10 flex flex-col items-center justify-center text-center px-4">
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8, delay: 0.2 }}
+                    className="flex flex-col items-center gap-6 max-w-4xl"
+                >
+                    {/* <div className="relative w-48 md:w-64 h-24 mb-4">
+                        <Image
+                            src="/images/nuzi-logo.png"
+                            alt="Nuzii Logo"
+                            fill
+                            className="object-contain brightness-0 invert"
+                        />
+                    </div> */}
+                    
+
+                    {/* Headline */}
+                    <h1 className="text-4xl md:text-6xl lg:text-7xl font-light tracking-tight text-white leading-tight drop-shadow-lg">
+                        Elevate Your Everyday Style
+                    </h1>
+
+                    {/* Subheadline */}
+                    <p className="text-lg md:text-xl text-white/90 font-light max-w-xl drop-shadow-md">
+                        Modest friendly fashion that feels premium without the high price.
+                        Timeless pieces for the modern woman.
+                    </p>
+
+                    {/* CTA Buttons */}
+                    <div className="pt-8 flex flex-col sm:flex-row gap-4">
+                        <Link
+                            href="/shop"
+                            className="inline-flex items-center justify-center gap-2 bg-nuziiRoseGold hover:bg-nuziiRoseGoldDark text-white px-8 py-3 rounded-lg font-medium transition-all duration-300 hover:shadow-lg group min-w-[160px]"
+                        >
+                            Shop Now
+                        </Link>
+                        <Link
+                            href="/shop"
+                            className="inline-flex items-center justify-center gap-2 bg-white hover:bg-gray-100 text-nuziiRoseGoldDark px-8 py-3 rounded-lg font-medium transition-all duration-300 hover:shadow-lg group min-w-[160px]"
+                        >
+                            View Collection
+                        </Link>
+                    </div>
+                </motion.div>
+            </div>
+
+            {/* Carousel Indicators */}
+            <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 z-20 flex gap-3">
+                {CAROUSEL_IMAGES.map((_, index) => (
+                    <button
+                        key={index}
+                        onClick={() => emblaApi?.scrollTo(index)}
+                        className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
+                            index === selectedIndex
+                                ? "bg-white w-8"
+                                : "bg-white/50 hover:bg-white/80"
+                        }`}
+                        aria-label={`Go to slide ${index + 1}`}
+                    />
+                ))}
+            </div>
         </section>
     );
 }
