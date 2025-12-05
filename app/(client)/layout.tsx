@@ -6,7 +6,6 @@ import { Toaster } from "react-hot-toast";
 import { VisualEditing } from "next-sanity";
 import { draftMode } from "next/headers";
 import DisableDraftMode from "@/components/DisableDraftMode";
-import ChatIcon from "@/components/new/ChatIcon";
 import { AuthProvider } from "@/context/AuthContext";
 
 export const metadata: Metadata = {
@@ -41,7 +40,6 @@ export default async function RootLayout({
           }}
         />
         <SanityLive />
-        <ChatIcon />
       </div>
     </AuthProvider>
   );
