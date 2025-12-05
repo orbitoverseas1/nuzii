@@ -61,7 +61,7 @@ export default function Hero() {
                                 priority={index === 0}
                             />
                             {/* Dark Overlay for better text visibility */}
-                            <div className="absolute inset-0 bg-black/30" />
+                            <div className="absolute inset-0 bg-black/20" />
                         </div>
                     ))}
                 </div>
