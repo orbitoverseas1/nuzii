@@ -14,6 +14,16 @@ export const productType = defineType({
       validation: (Rule) => Rule.required(),
     }),
     defineField({
+      name: "brand",
+      title: "Brand",
+      type: "string",
+    }),
+    defineField({
+      name: "collection",
+      title: "Collection",
+      type: "string",
+    }),
+    defineField({
       name: "slug",
       title: "Slug",
       type: "slug",
@@ -30,14 +40,14 @@ export const productType = defineType({
       of: [{ type: "image", options: { hotspot: true } }],
     }),
     defineField({
-      name: "intro",
-      title: "Product Intro",
+      name: "variantInfo",
+      title: "Variant",
       type: "string",
     }),
     defineField({
       name: "description",
       title: "Description",
-      type: "string",
+      type: "blockContent",
     }),
     defineField({
       name: "price",

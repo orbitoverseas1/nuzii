@@ -16,11 +16,11 @@ const ProductCharacteristics = ({ product }: { product: Product }) => {
         </AccordionTrigger>
         <AccordionContent className="flex flex-col gap-1">
           <p className="flex items-center justify-between">
-            Brand: <span className="font-semibold tracking-wide">Unknown</span>
+            Brand: <span className="font-semibold tracking-wide">{product?.brand || "Unknown"}</span>
           </p>
           <p className="flex items-center justify-between">
             Collection:{" "}
-            <span className="font-semibold tracking-wide">2024</span>
+            <span className="font-semibold tracking-wide">{product?.collection || "N/A"}</span>
           </p>
           <p className="flex items-center justify-between">
             Type:{" "}
@@ -37,7 +37,7 @@ const ProductCharacteristics = ({ product }: { product: Product }) => {
           <p className="flex items-center justify-between">
             Variant:{" "}
             <span className="font-semibold tracking-wide">
-              {product?.intro}
+              {product?.variantInfo}
             </span>
           </p>
         </AccordionContent>

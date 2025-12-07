@@ -9,8 +9,9 @@ import { notFound } from "next/navigation";
 import React from "react";
 import { FaRegQuestionCircle } from "react-icons/fa";
 import { FiShare2 } from "react-icons/fi";
-import { RxBorderSplit } from "react-icons/rx";
+
 import { TbTruckDelivery } from "react-icons/tb";
+import { PortableText } from "@portabletext/react";
 
 const ProductPage = async ({
   params,
@@ -43,9 +44,75 @@ const ProductPage = async ({
             </p>
           )}
 
-          <p className="text-sm text-gray-600 tracking-wide">
-            {product?.description}
-          </p>
+          {product?.description && (
+            <div className="text-sm text-gray-600 tracking-wide prose prose-sm max-w-none">
+              <PortableText
+                value={product.description}
+                components={{
+                  block: {
+                    normal: ({ children }) => (
+                      <p className="mb-3 leading-relaxed">{children}</p>
+                    ),
+                    h1: ({ children }) => (
+                      <h1 className="text-2xl font-bold mb-3 text-gray-800">
+                        {children}
+                      </h1>
+                    ),
+                    h2: ({ children }) => (
+                      <h2 className="text-xl font-bold mb-2 text-gray-800">
+                        {children}
+                      </h2>
+                    ),
+                    h3: ({ children }) => (
+                      <h3 className="text-lg font-semibold mb-2 text-gray-800">
+                        {children}
+                      </h3>
+                    ),
+                    h4: ({ children }) => (
+                      <h4 className="text-base font-semibold mb-2 text-gray-800">
+                        {children}
+                      </h4>
+                    ),
+                    blockquote: ({ children }) => (
+                      <blockquote className="border-l-4 border-gray-300 pl-4 italic my-3">
+                        {children}
+                      </blockquote>
+                    ),
+                  },
+                  list: {
+                    bullet: ({ children }) => (
+                      <ul className="list-disc list-inside mb-3 space-y-1">
+                        {children}
+                      </ul>
+                    ),
+                  },
+                  listItem: {
+                    bullet: ({ children }) => (
+                      <li className="ml-2">{children}</li>
+                    ),
+                  },
+                  marks: {
+                    strong: ({ children }) => (
+                      <strong className="font-bold text-gray-800">
+                        {children}
+                      </strong>
+                    ),
+                    em: ({ children }) => <em className="italic">{children}</em>,
+                    link: ({ children, value }) => (
+                      <a
+                        href={value?.href}
+                        className="text-blue-600 hover:underline"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {children}
+                      </a>
+                    ),
+                  },
+                }}
+              />
+            </div>
+          )}
           <div className="flex items-center gap-2.5 lg:gap-5">
             <AddToCartButton
               product={product}
@@ -57,10 +124,7 @@ const ProductPage = async ({
           </div>
           <ProductCharacteristics product={product} />
           <div className="flex flex-wrap items-center justify-between gap-2.5 border-b border-b-gray-200 py-5 -mt-2">
-            <div className="flex items-center gap-2 text-sm text-black hover:text-red-600 hoverEffect">
-              <RxBorderSplit className="text-lg" />
-              <p>Compare color</p>
-            </div>
+
             <div className="flex items-center gap-2 text-sm text-black hover:text-red-600 hoverEffect">
               <FaRegQuestionCircle className="text-lg" />
               <p>Ask a question</p>
