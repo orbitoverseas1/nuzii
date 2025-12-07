@@ -46,15 +46,15 @@ const AboutPage = () => {
   return (
     <div className="w-full">
       {/* Section 1: Our Story - Hero */}
-      <section className="w-full bg-nuziiRoseGold">
+      <section className="w-full bg-[#c8a19c]">
         <div className="grid md:grid-cols-2 min-h-[600px]">
           {/* Left Column - Image */}
-          <div className="relative h-[400px] md:h-auto w-full">
+          <div className="relative h-[400px] md:h-full w-full">
             <Image
               src="/images/about-left.png"
               alt="Nuzii Woman"
               fill
-              className="object-contain"
+              className="object-cover object-top"
             />
           </div>
 
@@ -172,7 +172,7 @@ const AboutPage = () => {
       </section>
 
       {/* Section 4: Our Values */}
-      <section className="py-24 bg-nuziiRoseGold">
+      <section className="py-24 bg-[#c8a19c]">
         <div className="container mx-auto px-4 md:px-6 max-w-5xl">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-5xl font-light text-white mb-6">
