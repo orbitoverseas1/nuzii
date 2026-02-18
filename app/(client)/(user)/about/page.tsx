@@ -71,7 +71,7 @@ const AboutPage = () => {
             <div className="space-y-4 text-white/90 font-light leading-relaxed">
               <p>
                 At NUZI, we pour intention into every piece we create.
-                Our mission is to deliver quality, elegance, and modesty in every shawl—crafted to reflect our brand’s timeless values.
+                Our mission is to deliver quality, elegance, and modesty in every shawl and abaya crafted to reflect our brand’s timeless values.
               </p>
               <p>
                 We design with the modern woman in mind, offering pieces that uplift confidence and bring effortless beauty to your everyday moments.
@@ -113,7 +113,7 @@ const AboutPage = () => {
             Brand Story: Nuzi.co
           </h2>
           <div className="w-24 h-[1px] bg-nuziiRoseGold mx-auto mb-10" />
-          
+
           <div className="space-y-6 text-lg text-[#6B514B]/80 font-light leading-relaxed">
             <p>
               Nuzi.co was born from a heartfelt dream shared with my husband to create a brand inspired by my name, Nushath. It was his long-held wish to see something meaningful and lasting grow from that name, and today, that dream has gracefully come to life.
