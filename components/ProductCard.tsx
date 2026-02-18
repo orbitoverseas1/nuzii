@@ -10,7 +10,7 @@ import Title from "./Title";
 const ProductCard = ({ product }: { product: Product }) => {
   return (
     <div className="rounded-lg overflow-hidden group text-sm">
-      <div className="overflow-hidden relative bg-gradient-to-r from-zinc-200 via-zinc-300 to-zinc-200">
+      <div className="overflow-hidden relative" style={{ backgroundColor: '#f2e6e5' }}>
         {product?.images && (
           <Link href={`/product/${product?.slug?.current}`}>
             <Image
