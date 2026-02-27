@@ -1,4 +1,5 @@
-import { Facebook, Instagram, MessageCircle } from "lucide-react";
+import { Facebook, Instagram } from "lucide-react";
+import { FaWhatsapp } from "react-icons/fa";
 import React from "react";
 import {
   Tooltip,
@@ -28,7 +29,7 @@ const getIcon = (platform: string) => {
     case "facebook":
       return <Facebook className="w-5 h-5" />;
     case "whatsapp":
-      return <MessageCircle className="w-5 h-5" />;
+      return <FaWhatsapp className="w-5 h-5" />;
     default:
       return null;
   }
