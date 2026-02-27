@@ -39,7 +39,7 @@ export const socialMediaLinks = [
   { title: "Instagram", href: "https://www.instagram.com/nuzi.co?igsh=aHJzYjExZXM2NGY5", platform: "instagram" },
   { title: "TikTok", href: "https://www.tiktok.com/@nuzi.co?_r=1&_t=ZS-91h06CM6Tp3", platform: "tiktok" },
   { title: "Facebook", href: "https://facebook.com", platform: "facebook" },
-  { title: "WhatsApp Support", href: "https://wa.me/1234567890", platform: "whatsapp" },
+  { title: "WhatsApp Support", href: "https://wa.me/94762537608", platform: "whatsapp" },
 ];
 
 export const faqsData = [
