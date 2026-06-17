@@ -1,4 +1,5 @@
 import { Product } from "./sanity.types";
+import { getDiscountedPrice } from "./lib/productPricing";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
@@ -61,17 +62,18 @@ const useCartStore = create<CartState>()(
         })),
       resetCart: () => set({ items: [] }),
       getTotalPrice: () => {
-        return get().items.reduce(
-          (total, item) => total + (item.product.price ?? 0) * item.quantity,
-          0
-        );
+        return get().items.reduce((total, item) => {
+          const price = getDiscountedPrice(
+            item.product.price,
+            item.product.discount
+          );
+          return total + price * item.quantity;
+        }, 0);
       },
       getSubTotalPrice: () => {
         return get().items.reduce((total, item) => {
           const price = item.product.price ?? 0;
-          const discount = ((item.product.discount ?? 0) * price) / 100;
-          const discountedPrice = price + discount;
-          return total + discountedPrice * item.quantity;
+          return total + price * item.quantity;
         }, 0);
       },
       getItemCount: (productId) => {

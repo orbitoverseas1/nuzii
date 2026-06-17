@@ -4,6 +4,7 @@ import stripe from "@/lib/stripe";
 import Stripe from "stripe";
 import { urlFor } from "@/sanity/lib/image";
 import { CartItem } from "@/store";
+import { getDiscountedPrice } from "@/lib/productPricing";
 
 export interface Metadata {
   orderNumber: string;
@@ -61,7 +62,9 @@ export async function createCheckoutSession(
       line_items: items.map((item) => ({
         price_data: {
           currency: "lkr",
-          unit_amount: Math.round(item.product.price! * 100),
+          unit_amount: Math.round(
+            getDiscountedPrice(item.product.price, item.product.discount) * 100
+          ),
           product_data: {
             name: item.product.name || "Unnamed Product",
 

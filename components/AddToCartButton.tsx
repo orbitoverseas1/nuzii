@@ -3,6 +3,7 @@ import { Product } from "@/sanity.types";
 import React from "react";
 import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
+import { getDiscountAmount, getDiscountedPrice } from "@/lib/productPricing";
 
 interface Props {
   product: Product;
@@ -19,6 +20,8 @@ const formatPrice = (amount: number | undefined) =>
   });
 
 const getBuyLink = (product: Product) => {
+  const discountAmount = getDiscountAmount(product?.price, product?.discount);
+  const finalPrice = getDiscountedPrice(product?.price, product?.discount);
   const productUrl = product?.slug?.current
     ? `${window.location.origin}/product/${product.slug.current}`
     : window.location.href;
@@ -26,7 +29,9 @@ const getBuyLink = (product: Product) => {
     `Hi NUZII, I would like to buy this product: ${product?.name ?? "Product"}`,
     product?.variantInfo ? `Variant: ${product.variantInfo}` : null,
     product?.variant ? `Type: ${product.variant}` : null,
-    `Price: ${formatPrice(product?.price)}`,
+    discountAmount ? `Original price: ${formatPrice(product?.price)}` : null,
+    discountAmount ? `Discount: ${formatPrice(discountAmount)}` : null,
+    `Price: ${formatPrice(finalPrice)}`,
     `Product link: ${productUrl}`,
   ]
     .filter(Boolean)
