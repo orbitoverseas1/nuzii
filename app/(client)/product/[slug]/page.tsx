@@ -144,7 +144,7 @@ const ProductPage = async ({
                 Free Shipping
               </p>
               <p className="text-sm text-gray-500">
-                Free shipping over order $120
+                Free shipping over order LKR 120
               </p>
             </div>
             <div className="border border-darkBlue/20 text-center p-3 hover:border-darkBlue hoverEffect rounded-md">

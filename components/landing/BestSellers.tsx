@@ -2,10 +2,10 @@ import Link from "next/link";
 import { Eye, ShoppingBag } from "lucide-react";
 
 const products = [
-    { id: 1, name: "Silk Touch Abaya", price: "$89.00", category: "Luxe" },
-    { id: 2, name: "Everyday Linen Set", price: "$65.00", category: "Essentials" },
-    { id: 3, name: "Pleated Maxi Skirt", price: "$55.00", category: "Bottoms" },
-    { id: 4, name: "Chiffon Hijab - Rose", price: "$18.00", category: "Accessories" },
+    { id: 1, name: "Silk Touch Abaya", price: "LKR 89.00", category: "Luxe" },
+    { id: 2, name: "Everyday Linen Set", price: "LKR 65.00", category: "Essentials" },
+    { id: 3, name: "Pleated Maxi Skirt", price: "LKR 55.00", category: "Bottoms" },
+    { id: 4, name: "Chiffon Hijab - Rose", price: "LKR 18.00", category: "Accessories" },
 ];
 
 export default function BestSellers() {
@@ -43,7 +43,7 @@ export default function BestSellers() {
                                     <button className="p-3 bg-white text-nuziiText rounded-full shadow-lg hover:bg-nuziiRoseGold hover:text-white transition-colors" aria-label="Quick View">
                                         <Eye className="w-5 h-5" />
                                     </button>
-                                    <button className="p-3 bg-white text-nuziiText rounded-full shadow-lg hover:bg-nuziiRoseGold hover:text-white transition-colors" aria-label="Add to Cart">
+                                    <button className="p-3 bg-white text-nuziiText rounded-full shadow-lg hover:bg-nuziiRoseGold hover:text-white transition-colors" aria-label="Buy">
                                         <ShoppingBag className="w-5 h-5" />
                                     </button>
                                 </div>

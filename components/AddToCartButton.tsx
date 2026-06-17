@@ -1,11 +1,7 @@
 "use client";
 import { Product } from "@/sanity.types";
-import React, { useEffect, useState } from "react";
-import toast from "react-hot-toast";
-import PriceFormatter from "./PriceFormatter";
+import React from "react";
 import { Button } from "./ui/button";
-import useCartStore from "@/store";
-import QuantityButtons from "./QuantityButtons";
 import { cn } from "@/lib/utils";
 
 interface Props {
@@ -13,55 +9,49 @@ interface Props {
   className?: string;
 }
 
-const AddToCartButton = ({ product, className }: Props) => {
-  const { addItem, getItemCount } = useCartStore();
-  const [isClient, setIsClient] = useState(false);
+const WHATSAPP_NUMBER = "94762537608";
 
-  const itemCount = getItemCount(product?._id);
+const formatPrice = (amount: number | undefined) =>
+  new Number(amount).toLocaleString("en-LK", {
+    currency: "LKR",
+    style: "currency",
+    minimumFractionDigits: 2,
+  });
+
+const getBuyLink = (product: Product) => {
+  const productUrl = product?.slug?.current
+    ? `${window.location.origin}/product/${product.slug.current}`
+    : window.location.href;
+  const productDetails = [
+    `Hi NUZII, I would like to buy this product: ${product?.name ?? "Product"}`,
+    product?.variantInfo ? `Variant: ${product.variantInfo}` : null,
+    product?.variant ? `Type: ${product.variant}` : null,
+    `Price: ${formatPrice(product?.price)}`,
+    `Product link: ${productUrl}`,
+  ]
+    .filter(Boolean)
+    .join("\n");
+
+  return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
+    productDetails
+  )}`;
+};
+
+const AddToCartButton = ({ product, className }: Props) => {
   const isOutOfStock = product?.stock === 0;
 
-  // Use useEffect to set isClient to true after component mounts
-  // This ensures that the component only renders on the client-side
-  // Preventing hydration errors due to server/client mismatch
-
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
-  if (!isClient) {
-    return null;
-  }
   return (
     <div className="w-full h-12 flex items-center">
-      {itemCount ? (
-        <div className="text-sm w-full">
-          <div className="flex items-center justify-between">
-            <span className="text-xs text-muted-foreground">Quantity</span>
-            <QuantityButtons product={product} />
-          </div>
-          <div className="flex items-center justify-between border-t pt-1">
-            <span className="text-xs font-semibold">Subtotal</span>
-            <PriceFormatter
-              amount={product?.price ? product.price * itemCount : 0}
-            />
-          </div>
-        </div>
-      ) : (
-        <Button
-          onClick={() => {
-            addItem(product);
-            toast.success(
-              `${product?.name?.substring(0, 12)}... added successfully!`
-            );
-          }}
-          disabled={isOutOfStock}
-          className={cn(
-            "w-full bg-transparent text-darkColor shadow-none border border-darkColor/30 font-semibold tracking-wide hover:text-white cursor-pointer hoverEffect",
-            className
-          )}
-        >
-          Add to cart
-        </Button>
-      )}
+      <Button
+        onClick={() => window.open(getBuyLink(product), "_blank", "noopener")}
+        disabled={isOutOfStock}
+        className={cn(
+          "w-full bg-transparent text-darkColor shadow-none border border-darkColor/30 font-semibold tracking-wide hover:text-white cursor-pointer hoverEffect",
+          className
+        )}
+      >
+        Buy
+      </Button>
     </div>
   );
 };

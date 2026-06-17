@@ -2,10 +2,10 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
 const newArrivals = [
-    { id: 1, name: "Textured Knit Cardigan", price: "$75.00", tag: "New" },
-    { id: 2, name: "Wide Leg Trousers", price: "$58.00", tag: "Hot" },
-    { id: 3, name: "Satin Wrap Dress", price: "$95.00", tag: "New" },
-    { id: 4, name: "Cotton Poplin Shirt", price: "$45.00", tag: "Essential" },
+    { id: 1, name: "Textured Knit Cardigan", price: "LKR 75.00", tag: "New" },
+    { id: 2, name: "Wide Leg Trousers", price: "LKR 58.00", tag: "Hot" },
+    { id: 3, name: "Satin Wrap Dress", price: "LKR 95.00", tag: "New" },
+    { id: 4, name: "Cotton Poplin Shirt", price: "LKR 45.00", tag: "Essential" },
 ];
 
 export default function NewArrivals() {

@@ -5,7 +5,6 @@ import { getAllCategories } from "@/sanity/helpers";
 import HeaderMenu from "./new/HeaderMenu";
 import Logo from "./new/Logo";
 import { ListOrdered } from "lucide-react";
-import CartIcon from "./new/CartIcon";
 import MobileMenu from "./new/MobileMenu";
 import SearchBar from "./new/SearchBar";
 import UserMenu from "./new/UserMenu";
@@ -40,8 +39,6 @@ const Header = async () => {
         {/* Right: Utility Icons */}
         <div className="w-1/3 flex items-center justify-end gap-6">
           <SearchBar />
-
-          <CartIcon />
 
           <Link href={"/orders"} className="hidden md:block group relative text-nuziiText hover:text-nuziiRoseGoldDark transition-colors">
             <ListOrdered className="w-5 h-5" />
