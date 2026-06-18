@@ -21,7 +21,7 @@ export default function NewArrivals() {
                     </p>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-8 mb-12">
                     {newArrivals.map((product) => (
                         <div key={product.id} className="group cursor-pointer">
                             <div className="aspect-[4/5] bg-nuziiBeige/50 rounded-2xl relative overflow-hidden mb-4 transition-all duration-300 group-hover:shadow-lg group-hover:bg-nuziiRoseGold/10">
@@ -37,7 +37,7 @@ export default function NewArrivals() {
                             </div>
 
                             <div className="space-y-1">
-                                <h3 className="text-lg font-medium text-nuziiText group-hover:text-nuziiRoseGoldDark transition-colors">
+                                <h3 className="text-sm sm:text-lg font-medium text-nuziiText group-hover:text-nuziiRoseGoldDark transition-colors">
                                     {product.name}
                                 </h3>
                                 <p className="text-nuziiTextLight">{product.price}</p>

@@ -29,7 +29,7 @@ export default function BestSellers() {
                     </Link>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-8">
                     {products.map((product) => (
                         <div key={product.id} className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
                             <div className="aspect-[3/4] bg-gray-100 relative overflow-hidden">
@@ -49,9 +49,9 @@ export default function BestSellers() {
                                 </div>
                             </div>
 
-                            <div className="p-4">
+                            <div className="p-3 sm:p-4">
                                 <p className="text-xs text-nuziiTextLight mb-1">{product.category}</p>
-                                <h3 className="font-medium text-nuziiText mb-2">{product.name}</h3>
+                                <h3 className="text-sm sm:text-base font-medium text-nuziiText mb-2">{product.name}</h3>
                                 <p className="text-nuziiRoseGoldDark font-semibold">{product.price}</p>
                             </div>
                         </div>

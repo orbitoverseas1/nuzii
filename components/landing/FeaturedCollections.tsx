@@ -21,7 +21,7 @@ export default function FeaturedCollections() {
                     </p>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
                     {collections.map((collection, index) => (
                         <Link
                             key={index}
@@ -36,8 +36,8 @@ export default function FeaturedCollections() {
                                     <span className="text-xs">Img</span>
                                 </div>
                             </div>
-                            <div className="absolute bottom-0 inset-x-0 p-6 bg-gradient-to-t from-white/90 to-transparent pt-12">
-                                <h3 className="text-xl font-medium text-nuziiText group-hover:text-nuziiRoseGoldDark transition-colors">
+                            <div className="absolute bottom-0 inset-x-0 p-4 sm:p-6 bg-gradient-to-t from-white/90 to-transparent pt-12">
+                                <h3 className="text-base sm:text-xl font-medium text-nuziiText group-hover:text-nuziiRoseGoldDark transition-colors">
                                     {collection.name}
                                 </h3>
                             </div>

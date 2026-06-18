@@ -31,17 +31,17 @@ export default function CustomerLove() {
                     </p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-8 max-w-6xl mx-auto">
                     {testimonials.map((item, index) => (
                         <div
                             key={index}
-                            className="relative bg-nuziiCream p-8 rounded-2xl rounded-tr-none shadow-sm border border-nuziiBeige"
+                            className="relative bg-nuziiCream p-4 sm:p-8 rounded-2xl rounded-tr-none shadow-sm border border-nuziiBeige"
                         >
                             <div className="absolute -top-4 -right-4 w-10 h-10 bg-nuziiRoseGold text-white rounded-full flex items-center justify-center shadow-md">
                                 <MessageCircle className="w-5 h-5" />
                             </div>
 
-                            <p className="text-nuziiText text-lg italic mb-6 leading-relaxed">
+                            <p className="text-nuziiText text-sm sm:text-lg italic mb-6 leading-relaxed">
                                 &ldquo;{item.quote}&rdquo;
                             </p>
 
