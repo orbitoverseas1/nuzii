@@ -8,8 +8,11 @@ import AddToCartButton from "./AddToCartButton";
 import AddToBagButton from "./AddToBagButton";
 import WishlistButton from "./WishlistButton";
 import Title from "./Title";
+import { isProductOutOfStock } from "@/lib/productStock";
 
 const ProductCard = ({ product }: { product: Product }) => {
+  const inStock = !isProductOutOfStock(product);
+
   return (
     <div className="rounded-lg overflow-hidden group text-sm">
       <div className="overflow-hidden relative" style={{ backgroundColor: '#f2e6e5' }}>
@@ -22,7 +25,7 @@ const ProductCard = ({ product }: { product: Product }) => {
               height={500}
               // loading="lazy"
               priority
-              className={`w-full h-72 object-contain overflow-hidden  transition-transform duration-500 ${product?.stock !== 0 && "group-hover:scale-105"}`}
+              className={`w-full h-72 object-contain overflow-hidden  transition-transform duration-500 ${inStock && "group-hover:scale-105"}`}
             />
           </Link>
         )}

@@ -1,12 +1,11 @@
-import AddToCartButton from "@/components/AddToCartButton";
-import AddToBagButton from "@/components/AddToBagButton";
-import WishlistButton from "@/components/WishlistButton";
 import Container from "@/components/Container";
 import ImageView from "@/components/new/ImageView";
 import PriceView from "@/components/PriceView";
 import ProductCharacteristics from "@/components/ProductCharacteristics";
 import ProductPageActions from "@/components/new/ProductPageActions";
+import ProductPurchasePanel from "@/components/new/ProductPurchasePanel";
 import { getProductBySlug } from "@/sanity/helpers";
+import { isProductOutOfStock } from "@/lib/productStock";
 import { notFound } from "next/navigation";
 import React from "react";
 import { PortableText } from "@portabletext/react";
@@ -23,6 +22,8 @@ const ProductPage = async ({
     return notFound();
   }
 
+  const hasVariants = (product.variants?.length ?? 0) > 0;
+
   return (
     <div>
       <Container className="flex flex-col md:flex-row gap-10 py-10">
@@ -30,13 +31,15 @@ const ProductPage = async ({
         <div className="w-full md:w-1/2 flex flex-col gap-5">
           <div>
             <p className="text-4xl font-bold mb-2">{product?.name}</p>
-            <PriceView
-              price={product?.price}
-              discount={product?.discount}
-              className="text-lg font-bold"
-            />
+            {!hasVariants && (
+              <PriceView
+                price={product?.price}
+                discount={product?.discount}
+                className="text-lg font-bold"
+              />
+            )}
           </div>
-          {product?.stock && (
+          {!isProductOutOfStock(product) && (
             <p className="bg-green-100 w-24 text-center text-green-600 text-sm py-2.5 font-semibold rounded-lg">
               In Stock
             </p>
@@ -111,20 +114,7 @@ const ProductPage = async ({
               />
             </div>
           )}
-          <div className="flex items-center gap-2.5 lg:gap-5">
-            <AddToCartButton
-              product={product}
-              className="bg-darkColor/80 text-white hover:bg-darkColor hoverEffect"
-            />
-            <AddToBagButton
-              product={product}
-              className="w-12 h-12 shrink-0 border-2"
-            />
-            <WishlistButton
-              product={product}
-              className="border-2 border-darkColor/30 text-darkColor/60 px-2.5 py-1.5 rounded-md hover:text-darkColor hover:border-darkColor hoverEffect"
-            />
-          </div>
+          <ProductPurchasePanel product={product} />
           <ProductCharacteristics product={product} />
           <ProductPageActions product={product} />
           <div className="flex flex-wrap items-center gap-5">

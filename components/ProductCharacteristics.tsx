@@ -6,8 +6,16 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "./ui/accordion";
+import { isProductOutOfStock } from "@/lib/productStock";
 
 const ProductCharacteristics = ({ product }: { product: Product }) => {
+  const colors = Array.from(
+    new Set((product?.variants ?? []).map((v) => v.color).filter(Boolean))
+  );
+  const sizes = Array.from(
+    new Set((product?.variants ?? []).map((v) => v.size).filter(Boolean))
+  );
+
   return (
     <Accordion type="single" collapsible>
       <AccordionItem value="item-1">
@@ -31,15 +39,33 @@ const ProductCharacteristics = ({ product }: { product: Product }) => {
           <p className="flex items-center justify-between">
             Stock:{" "}
             <span className="font-semibold tracking-wide">
-              {product?.stock ? "Available" : "Out of Stock"}
+              {isProductOutOfStock(product) ? "Out of Stock" : "Available"}
             </span>
           </p>
-          <p className="flex items-center justify-between">
-            Variant:{" "}
-            <span className="font-semibold tracking-wide">
-              {product?.variantInfo}
-            </span>
-          </p>
+          {colors.length > 0 && (
+            <p className="flex items-center justify-between">
+              Colors:{" "}
+              <span className="font-semibold tracking-wide">
+                {colors.join(", ")}
+              </span>
+            </p>
+          )}
+          {sizes.length > 0 && (
+            <p className="flex items-center justify-between">
+              Sizes:{" "}
+              <span className="font-semibold tracking-wide">
+                {sizes.join(", ")}
+              </span>
+            </p>
+          )}
+          {product?.variantInfo && (
+            <p className="flex items-center justify-between">
+              Notes:{" "}
+              <span className="font-semibold tracking-wide">
+                {product?.variantInfo}
+              </span>
+            </p>
+          )}
         </AccordionContent>
       </AccordionItem>
     </Accordion>

@@ -173,6 +173,9 @@ export type Order = {
       [internalGroqTypeReferenceTo]?: "product";
     };
     quantity?: number;
+    variantColor?: string;
+    variantSize?: string;
+    variantSku?: string;
     _key: string;
   }>;
   totalPrice?: number;
@@ -180,6 +183,29 @@ export type Order = {
   amountDiscount?: number;
   status?: "pending" | "paid" | "shipped" | "delivered" | "cancelled";
   orderDate?: string;
+};
+
+export type ProductVariant = {
+  _type: "productVariant";
+  color?: string;
+  colorHex?: string;
+  size?: string;
+  sku?: string;
+  stock?: number;
+  priceOverride?: number;
+  images?: Array<{
+    asset?: {
+      _ref: string;
+      _type: "reference";
+      _weak?: boolean;
+      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+    };
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    _type: "image";
+    _key: string;
+  }>;
 };
 
 export type Product = {
@@ -247,6 +273,7 @@ export type Product = {
     [internalGroqTypeReferenceTo]?: "category";
   }>;
   stock?: number;
+  variants?: Array<ProductVariant & { _key: string }>;
   status?: "new" | "hot" | "sale";
   variant?: "shawls" | "bags" | "jewellery" | "hijab-accessories";
   isBestSelling?: boolean;
@@ -428,7 +455,7 @@ export type SanityAssetSourceData = {
   url?: string;
 };
 
-export type AllSanitySchemaTypes = HomepageProductSections | HomepageLooks | ProductShowcase | ShopBanner | ShopHero | Order | Product | Category | BlockContent | SanityImagePaletteSwatch | SanityImagePalette | SanityImageDimensions | SanityImageHotspot | SanityImageCrop | SanityFileAsset | SanityImageAsset | SanityImageMetadata | Geopoint | Slug | SanityAssetSourceData;
+export type AllSanitySchemaTypes = HomepageProductSections | HomepageLooks | ProductShowcase | ShopBanner | ShopHero | Order | Product | ProductVariant | Category | BlockContent | SanityImagePaletteSwatch | SanityImagePalette | SanityImageDimensions | SanityImageHotspot | SanityImageCrop | SanityFileAsset | SanityImageAsset | SanityImageMetadata | Geopoint | Slug | SanityAssetSourceData;
 export declare const internalGroqTypeReferenceTo: unique symbol;
 // Source: ./app/(client)/success/page.tsx
 // Variable: query
@@ -750,6 +777,7 @@ export type PRODUCT_BY_ID_QUERYResult = {
     [internalGroqTypeReferenceTo]?: "category";
   }>;
   stock?: number;
+  variants?: Array<ProductVariant & { _key: string }>;
   status?: "hot" | "new" | "sale";
   variant?: "bags" | "hijab-accessories" | "jewellery" | "shawls";
   isBestSelling?: boolean;

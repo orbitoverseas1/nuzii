@@ -81,6 +81,7 @@ const OrderDetailsDialog: React.FC<OrderDetailsDialogProps> = ({
           <TableHeader>
             <TableRow>
               <TableHead>Product</TableHead>
+              <TableHead>Option</TableHead>
               <TableHead>Quantity</TableHead>
               <TableHead>Price</TableHead>
             </TableRow>
@@ -101,6 +102,11 @@ const OrderDetailsDialog: React.FC<OrderDetailsDialogProps> = ({
                   )}
 
                   {product?.product && product?.product?.name}
+                </TableCell>
+                <TableCell>
+                  {[product?.variantColor, product?.variantSize]
+                    .filter(Boolean)
+                    .join(" / ") || "—"}
                 </TableCell>
                 <TableCell>{product?.quantity}</TableCell>
                 <TableCell>

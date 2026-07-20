@@ -6,7 +6,8 @@ import WishlistButton from "@/components/WishlistButton";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { urlFor } from "@/sanity/lib/image";
-import useCartStore from "@/store";
+import { getDiscountedPrice } from "@/lib/productPricing";
+import useCartStore, { getCartLineKey } from "@/store";
 import { ShoppingBag, Trash } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -52,8 +53,8 @@ const CartPage = () => {
     router.push("/checkout");
   };
 
-  const handleDeleteProduct = (id: string) => {
-    deleteCartProduct(id);
+  const handleDeleteProduct = (lineKey: string) => {
+    deleteCartProduct(lineKey);
     toast.success("Product deleted successfully!");
   };
   return (
@@ -69,11 +70,25 @@ const CartPage = () => {
                 {/* Product View start */}
                 <div className="lg:col-span-2 rounded-lg">
                   <div className="border bg-white rounded-md">
-                    {groupedItems?.map(({ product }) => {
-                      const itemCount = getItemCount(product?._id);
+                    {groupedItems?.map(({ product, selectedVariant }) => {
+                      const lineKey = getCartLineKey(
+                        product?._id,
+                        selectedVariant
+                      );
+                      const itemCount = getItemCount(lineKey);
+                      const unitPrice = getDiscountedPrice(
+                        selectedVariant?.priceOverride ?? product?.price,
+                        product?.discount
+                      );
+                      const variantLabel = [
+                        selectedVariant?.color,
+                        selectedVariant?.size,
+                      ]
+                        .filter(Boolean)
+                        .join(" / ");
                       return (
                         <div
-                          key={product?._id}
+                          key={lineKey}
                           className="border-b p-2.5 last:border-b-0 flex items-center justify-between gap-5"
                         >
                           <div className="flex flex-1 items-start gap-2 h-36 md:h-44">
@@ -94,14 +109,16 @@ const CartPage = () => {
                                 <h2 className="text-base font-semibold line-clamp-1">
                                   {product?.name}
                                 </h2>
+                                {variantLabel && (
+                                  <p className="text-sm capitalize">
+                                    Option:{" "}
+                                    <span className="font-semibold">
+                                      {variantLabel}
+                                    </span>
+                                  </p>
+                                )}
                                 <p className="text-sm text-lightColor font-medium">
                                   {product?.variantInfo}
-                                </p>
-                                <p className="text-sm capitalize">
-                                  Variant:{" "}
-                                  <span className="font-semibold">
-                                    {product?.variant}
-                                  </span>
                                 </p>
                                 <p className="text-sm capitalize">
                                   Status:{" "}
@@ -127,7 +144,7 @@ const CartPage = () => {
                                     <TooltipTrigger>
                                       <Trash
                                         onClick={() =>
-                                          handleDeleteProduct(product?._id)
+                                          handleDeleteProduct(lineKey)
                                         }
                                         className="w-4 h-4 md:w-5 md:h-5 mr-1 text-gray-500 hover:text-red-600 hoverEffect"
                                       />
@@ -142,10 +159,13 @@ const CartPage = () => {
                           </div>
                           <div className="flex flex-col items-start justify-between h-36 md:h-44 p-0.5 md:p-1">
                             <PriceFormatter
-                              amount={(product?.price as number) * itemCount}
+                              amount={unitPrice * itemCount}
                               className="font-bold text-lg"
                             />
-                            <QuantityButtons product={product} />
+                            <QuantityButtons
+                              product={product}
+                              selectedVariant={selectedVariant}
+                            />
                           </div>
                         </div>
                       );

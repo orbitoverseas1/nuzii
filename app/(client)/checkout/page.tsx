@@ -9,7 +9,7 @@ import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { getDiscountedPrice } from "@/lib/productPricing";
-import useCartStore from "@/store";
+import useCartStore, { getCartLineKey } from "@/store";
 import { useAuth } from "@/context/AuthContext";
 import { shippingMethods } from "@/constants";
 import { createOrder } from "@/actions/createOrder";
@@ -64,9 +64,13 @@ const CheckoutPage = () => {
   const discountedTotal = useMemo(
     () =>
       groupedItems.reduce(
-        (total, { product, quantity }) =>
+        (total, { product, quantity, selectedVariant }) =>
           total +
-          getDiscountedPrice(product.price, product.discount) * quantity,
+          getDiscountedPrice(
+            selectedVariant?.priceOverride ?? product.price,
+            product.discount
+          ) *
+            quantity,
         0
       ),
     [groupedItems]
@@ -248,23 +252,34 @@ const CheckoutPage = () => {
           <div className="lg:col-span-1 bg-white rounded-lg border p-6 space-y-4">
             <h2 className="text-lg font-semibold">Order Summary</h2>
             <div className="space-y-2 max-h-64 overflow-y-auto pr-1">
-              {groupedItems.map(({ product, quantity }) => (
-                <div
-                  key={product._id}
-                  className="flex justify-between text-sm gap-2"
-                >
-                  <span className="line-clamp-1">
-                    {product.name}{" "}
-                    <span className="text-gray-500">x{quantity}</span>
-                  </span>
-                  <PriceFormatter
-                    amount={
-                      getDiscountedPrice(product.price, product.discount) *
-                      quantity
-                    }
-                  />
-                </div>
-              ))}
+              {groupedItems.map(({ product, quantity, selectedVariant }) => {
+                const variantLabel = [
+                  selectedVariant?.color,
+                  selectedVariant?.size,
+                ]
+                  .filter(Boolean)
+                  .join(" / ");
+                return (
+                  <div
+                    key={getCartLineKey(product._id, selectedVariant)}
+                    className="flex justify-between text-sm gap-2"
+                  >
+                    <span className="line-clamp-1">
+                      {product.name}
+                      {variantLabel ? ` (${variantLabel})` : ""}{" "}
+                      <span className="text-gray-500">x{quantity}</span>
+                    </span>
+                    <PriceFormatter
+                      amount={
+                        getDiscountedPrice(
+                          selectedVariant?.priceOverride ?? product.price,
+                          product.discount
+                        ) * quantity
+                      }
+                    />
+                  </div>
+                );
+              })}
             </div>
             <Separator />
             <div className="flex justify-between text-sm">

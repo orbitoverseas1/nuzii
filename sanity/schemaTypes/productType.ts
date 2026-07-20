@@ -71,8 +71,17 @@ export const productType = defineType({
     defineField({
       name: "stock",
       title: "Stock",
+      description: "Ignored if this product has variants below — stock is then tracked per variant.",
       type: "number",
       validation: (Rule) => Rule.min(0),
+    }),
+    defineField({
+      name: "variants",
+      title: "Color / Size Variants",
+      description:
+        "Add one entry per color/size combination you sell. Leave empty for a product with no options — the base price, stock, and images above will be used.",
+      type: "array",
+      of: [{ type: "productVariant" }],
     }),
 
     defineField({

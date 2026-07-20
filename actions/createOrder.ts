@@ -26,6 +26,9 @@ export interface CheckoutDetails {
   shippingMethod: ShippingMethod;
 }
 
+const lineBasePrice = (item: GroupedCartItems) =>
+  item.selectedVariant?.priceOverride ?? item.product.price ?? 0;
+
 export async function createOrder(
   items: GroupedCartItems[],
   details: CheckoutDetails
@@ -34,19 +37,19 @@ export async function createOrder(
     throw new Error("Cart is empty");
   }
 
-  const itemsWithoutPrice = items.filter((item) => !item.product.price);
+  const itemsWithoutPrice = items.filter((item) => !lineBasePrice(item));
   if (itemsWithoutPrice.length > 0) {
     throw new Error("Some items do not have a price");
   }
 
   const subtotal = items.reduce(
-    (total, item) => total + (item.product.price ?? 0) * item.quantity,
+    (total, item) => total + lineBasePrice(item) * item.quantity,
     0
   );
   const discountedTotal = items.reduce(
     (total, item) =>
       total +
-      getDiscountedPrice(item.product.price, item.product.discount) *
+      getDiscountedPrice(lineBasePrice(item), item.product.discount) *
         item.quantity,
     0
   );
@@ -69,6 +72,9 @@ export async function createOrder(
       _key: crypto.randomUUID(),
       product: { _type: "reference", _ref: item.product._id },
       quantity: item.quantity,
+      variantColor: item.selectedVariant?.color,
+      variantSize: item.selectedVariant?.size,
+      variantSku: item.selectedVariant?.sku,
     })),
     totalPrice,
     currency: "lkr",
@@ -78,7 +84,14 @@ export async function createOrder(
   });
 
   for (const item of items) {
-    if (typeof item.product.stock === "number") {
+    const variantKey = item.selectedVariant?._key;
+    if (variantKey) {
+      transaction.patch(item.product._id, (patch) =>
+        patch.dec({
+          [`variants[_key=="${variantKey}"].stock`]: item.quantity,
+        })
+      );
+    } else if (typeof item.product.stock === "number") {
       transaction.patch(item.product._id, (patch) =>
         patch.dec({ stock: item.quantity })
       );

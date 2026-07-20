@@ -24,6 +24,8 @@ type OrderWithExpandedProducts = Omit<Order, "products"> & {
   products?: Array<{
     _key: string;
     quantity?: number;
+    variantColor?: string;
+    variantSize?: string;
     product?: Product;
   }>;
 };
@@ -90,14 +92,20 @@ const SuccessPage = () => {
               </span>
             </div>
             <div className="text-sm text-gray-700 space-y-1">
-              {order.products?.map((item) => (
-                <div key={item._key} className="flex justify-between">
-                  <span className="line-clamp-1">
-                    {item.product?.name}{" "}
-                    <span className="text-gray-500">x{item.quantity}</span>
-                  </span>
-                </div>
-              ))}
+              {order.products?.map((item) => {
+                const variantLabel = [item.variantColor, item.variantSize]
+                  .filter(Boolean)
+                  .join(" / ");
+                return (
+                  <div key={item._key} className="flex justify-between">
+                    <span className="line-clamp-1">
+                      {item.product?.name}
+                      {variantLabel ? ` (${variantLabel})` : ""}{" "}
+                      <span className="text-gray-500">x{item.quantity}</span>
+                    </span>
+                  </div>
+                );
+              })}
             </div>
             {order.shippingAddress && (
               <p className="text-sm text-gray-700">
