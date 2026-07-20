@@ -33,7 +33,7 @@ const HeaderMenu = ({ categories }: { categories: FEATURED_CATEGORIES_QUERYResul
         <div className="absolute top-full left-0 pt-4 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 z-50">
           <div className="bg-white rounded-xl shadow-xl border border-nuziiBeige p-4 min-w-[200px] flex flex-col gap-2">
             <Link
-              href="/shop"
+              href="/category/all"
               className="px-4 py-2 hover:bg-nuziiCream rounded-lg text-nuziiText hover:text-nuziiRoseGoldDark transition-colors"
             >
               All Products

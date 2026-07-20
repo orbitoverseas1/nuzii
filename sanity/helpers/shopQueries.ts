@@ -79,29 +79,28 @@ export const MID_PAGE_BANNERS_QUERY = defineQuery(`
 // Featured products - New Arrivals
 export const NEW_ARRIVALS_QUERY = defineQuery(`
   *[_type == "product" && status == "new"] | order(_createdAt desc) [0...12] {
-    _id,
-    name,
-    slug,
-    price,
-    discount,
-    images,
-    status,
-    rating
+    ...
   }
 `);
 
 // Featured products - Best Selling
 export const BEST_SELLING_QUERY = defineQuery(`
   *[_type == "product" && isBestSelling == true] | order(salesCount desc) [0...12] {
-    _id,
-    name,
-    slug,
-    price,
-    discount,
-    images,
-    status,
-    rating,
-    salesCount
+    ...
+  }
+`);
+
+// Homepage - drag-and-drop Most Loved products
+export const HOMEPAGE_MOST_LOVED_QUERY = defineQuery(`
+  *[_type == "homepageProductSections" && _id == "homepageProductSections"][0].mostLoved[]-> {
+      ...
+  }
+`);
+
+// Homepage - drag-and-drop Fresh Drops products
+export const HOMEPAGE_FRESH_DROPS_QUERY = defineQuery(`
+  *[_type == "homepageProductSections" && _id == "homepageProductSections"][0].freshDrops[]-> {
+      ...
   }
 `);
 
@@ -127,6 +126,23 @@ export const FEATURED_CATEGORIES_QUERY = defineQuery(`
     slug,
     description,
     image
+  }
+`);
+
+// Editorial image cards for the homepage "Explore the looks" section
+export const HOMEPAGE_LOOKS_QUERY = defineQuery(`
+  *[_type == "homepageLooks" && _id == "homepageLooks"][0] {
+    _id,
+    isActive,
+    heading,
+    description,
+    cards[] {
+      _key,
+      title,
+      image,
+      alt,
+      link
+    }
   }
 `);
 

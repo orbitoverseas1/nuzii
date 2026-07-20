@@ -6,6 +6,7 @@ export const productType = defineType({
   title: "Products",
   type: "document",
   icon: TrolleyIcon,
+
   fields: [
     defineField({
       name: "name",
@@ -99,6 +100,7 @@ export const productType = defineType({
         ],
       },
     }),
+
     defineField({
       name: "isBestSelling",
       title: "Best Selling",

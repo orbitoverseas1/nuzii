@@ -104,8 +104,8 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, categories }) => {
                         <div className="pl-4 border-l-2 border-nuziiRoseGold/20 flex flex-col gap-1 py-2">
                           <Link
                             onClick={onClose}
-                            href="/shop"
-                            className={`px-4 py-2 rounded-lg text-base transition-colors flex items-center gap-2 ${pathname === "/shop"
+                            href="/category/all"
+                            className={`px-4 py-2 rounded-lg text-base transition-colors flex items-center gap-2 ${pathname === "/category/all"
                               ? "text-nuziiRoseGoldDark font-medium"
                               : "text-nuziiTextLight hover:text-nuziiRoseGoldDark"
                               }`}

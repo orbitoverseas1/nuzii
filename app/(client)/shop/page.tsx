@@ -4,8 +4,8 @@ import {
   PRODUCT_SHOWCASE_QUERY,
   PROMO_GRID_BANNERS_QUERY,
   MID_PAGE_BANNERS_QUERY,
-  NEW_ARRIVALS_QUERY,
-  BEST_SELLING_QUERY,
+  HOMEPAGE_MOST_LOVED_QUERY,
+  HOMEPAGE_FRESH_DROPS_QUERY,
   TOP_RATED_QUERY,
   FEATURED_CATEGORIES_QUERY,
   ALL_PRODUCTS_QUERY,
@@ -18,15 +18,21 @@ import MidPageBanners from "@/components/shop/MidPageBanners";
 import FeaturedCategories from "@/components/shop/FeaturedCategories";
 import AllProductsSection from "@/components/shop/AllProductsSection";
 
-const ShopPage = async () => {
+const ShopPage = async ({
+  searchParams,
+}: {
+  searchParams?: Promise<{ section?: string }>;
+}) => {
+  const section = (await searchParams)?.section;
+  const initialTab = section === "most-loved" ? "best" : section === "fresh-drops" ? "new" : undefined;
   // Fetch all data in parallel
   const [
     heroes,
     showcases,
     promoBanners,
     midPageBanners,
-    newArrivals,
-    bestSelling,
+    homepageFreshDrops,
+    homepageMostLoved,
     topRated,
     categories,
     allProducts,
@@ -35,8 +41,8 @@ const ShopPage = async () => {
     client.fetch(PRODUCT_SHOWCASE_QUERY),
     client.fetch(PROMO_GRID_BANNERS_QUERY),
     client.fetch(MID_PAGE_BANNERS_QUERY),
-    client.fetch(NEW_ARRIVALS_QUERY),
-    client.fetch(BEST_SELLING_QUERY),
+    client.fetch(HOMEPAGE_FRESH_DROPS_QUERY),
+    client.fetch(HOMEPAGE_MOST_LOVED_QUERY),
     client.fetch(TOP_RATED_QUERY),
     client.fetch(FEATURED_CATEGORIES_QUERY),
     client.fetch(ALL_PRODUCTS_QUERY),
@@ -55,9 +61,10 @@ const ShopPage = async () => {
 
       {/* Featured Products with Tabs */}
       <FeaturedProducts
-        newArrivals={newArrivals}
-        bestSelling={bestSelling}
+        newArrivals={homepageFreshDrops ?? []}
+        bestSelling={homepageMostLoved ?? []}
         topRated={topRated}
+        initialTab={initialTab}
       />
 
       {/* Mid-Page Banners */}

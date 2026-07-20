@@ -9,6 +9,7 @@ interface FeaturedProductsProps {
     newArrivals: NEW_ARRIVALS_QUERYResult;
     bestSelling: BEST_SELLING_QUERYResult;
     topRated: TOP_RATED_QUERYResult;
+    initialTab?: TabType;
 }
 
 type TabType = "new" | "best" | "top";
@@ -17,19 +18,20 @@ export default function FeaturedProducts({
     newArrivals,
     bestSelling,
     topRated,
+    initialTab,
 }: FeaturedProductsProps) {
-    const [activeTab, setActiveTab] = useState<TabType>("new");
+    const [activeTab, setActiveTab] = useState<TabType>(initialTab || "new");
 
     const tabs = [
-        { id: "new" as TabType, label: "New Arrival", products: newArrivals },
-        { id: "best" as TabType, label: "Best Selling", products: bestSelling },
+        { id: "new" as TabType, label: "Fresh Drops", products: newArrivals },
+        { id: "best" as TabType, label: "Most Loved", products: bestSelling },
         { id: "top" as TabType, label: "Top Rated", products: topRated },
     ];
 
     const currentProducts = tabs.find((tab) => tab.id === activeTab)?.products || [];
 
     return (
-        <section className="py-16 px-6 md:px-12 bg-white">
+        <section id="featured-products" className="py-16 px-6 md:px-12 bg-white scroll-mt-24">
             <div className="container mx-auto max-w-7xl">
                 {/* Section Title */}
                 <div className="text-center mb-12">
