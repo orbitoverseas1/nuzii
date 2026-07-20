@@ -149,17 +149,22 @@ export type Order = {
   _updatedAt: string;
   _rev: string;
   orderNumber?: string;
-  invoice?: {
-    id?: string;
-    number?: string;
-    hosted_invoice_url?: string;
-  };
-  stripeCheckoutSessionId?: string;
-  stripeCustomerId?: string;
   clerkUserId?: string;
   customerName?: string;
   email?: string;
-  stripePaymentIntentId?: string;
+  phone?: string;
+  shippingAddress?: {
+    line1?: string;
+    line2?: string;
+    city?: string;
+    postalCode?: string;
+    country?: string;
+  };
+  shippingMethod?: {
+    title?: string;
+    cost?: number;
+  };
+  paymentGatewayReference?: string;
   products?: Array<{
     product?: {
       _ref: string;

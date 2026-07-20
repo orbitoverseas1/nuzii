@@ -11,8 +11,6 @@ import {
 import PriceFormatter from "./PriceFormatter";
 import Image from "next/image";
 import { urlFor } from "@/sanity/lib/image";
-import { Button } from "./ui/button";
-import Link from "next/link";
 
 interface OrderDetailsDialogProps {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -52,16 +50,31 @@ const OrderDetailsDialog: React.FC<OrderDetailsDialogProps> = ({
             </span>
           </p>
           <p>
-            <strong>Invoice Number:</strong> {order?.invoice?.number}
+            <strong>Phone:</strong> {order.phone}
           </p>
-          {order?.invoice && (
-            <Button className="bg-transparent border text-darkColor/80 mt-2 hover:text-darkColor hover:border-darkColor hover:bg-darkColor/10 hoverEffect ">
-              {order?.invoice?.hosted_invoice_url && (
-                <Link href={order?.invoice?.hosted_invoice_url} target="_blank">
-                  Download Invoice
-                </Link>
-              )}
-            </Button>
+          {order?.shippingAddress && (
+            <p>
+              <strong>Shipping Address:</strong>{" "}
+              {[
+                order.shippingAddress.line1,
+                order.shippingAddress.line2,
+                order.shippingAddress.city,
+                order.shippingAddress.postalCode,
+                order.shippingAddress.country,
+              ]
+                .filter(Boolean)
+                .join(", ")}
+            </p>
+          )}
+          {order?.shippingMethod && (
+            <p>
+              <strong>Shipping Method:</strong> {order.shippingMethod.title} (
+              <PriceFormatter
+                amount={order.shippingMethod.cost}
+                className="inline"
+              />
+              )
+            </p>
           )}
         </div>
         <Table>

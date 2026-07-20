@@ -121,11 +121,9 @@ const OrdersComponent = ({ orders }: { orders: any[] }) => {
                   </TableCell>
 
                   <TableCell className="hidden sm:table-cell">
-                    {order?.invoice && (
-                      <p className="font-medium line-clamp-1">
-                        {order?.invoice ? order?.invoice?.number : "----"}
-                      </p>
-                    )}
+                    <p className="font-medium line-clamp-1">
+                      {order?.shippingMethod?.title ?? "----"}
+                    </p>
                   </TableCell>
                   <TableCell>
                     {/* Delete button */}

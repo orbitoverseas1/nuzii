@@ -1,21 +1,16 @@
-import Link from "next/link";
 import React from "react";
 import Container from "./Container";
 import { getAllCategories } from "@/sanity/helpers";
 import HeaderMenu from "./new/HeaderMenu";
 import Logo from "./new/Logo";
-import { ListOrdered } from "lucide-react";
 import MobileMenu from "./new/MobileMenu";
 import SearchBar from "./new/SearchBar";
 import UserMenu from "./new/UserMenu";
+import CartIcon from "./new/CartIcon";
+import WishlistIcon from "./new/WishlistIcon";
+import OrdersIcon from "./new/OrdersIcon";
 
 const Header = async () => {
-  // Orders fetching will need to be moved to a client component or handled differently with Firebase
-  // For now, we'll pass null and handle it in the client component if possible, 
-  // or we can't fetch orders server-side easily without cookies.
-  // Let's assume for now we just render the header and orders will be fetched client-side or we'll fix this later.
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const orders: any[] = [];
   const categories = await getAllCategories(3);
 
   return (
@@ -39,16 +34,9 @@ const Header = async () => {
         {/* Right: Utility Icons */}
         <div className="w-1/3 flex items-center justify-end gap-6">
           <SearchBar />
-
-          <Link href={"/orders"} className="hidden md:block group relative text-nuziiText hover:text-nuziiRoseGoldDark transition-colors">
-            <ListOrdered className="w-5 h-5" />
-            {orders && orders.length > 0 && (
-              <span className="absolute -top-2 -right-2 bg-nuziiRoseGold text-white h-4 w-4 rounded-full text-[10px] font-medium flex items-center justify-center">
-                {orders.length}
-              </span>
-            )}
-          </Link>
-
+          <WishlistIcon />
+          <CartIcon />
+          <OrdersIcon />
           <UserMenu />
         </div>
       </Container>

@@ -1,6 +1,6 @@
 "use client";
 
-import useCartStore from "@/store";
+import PriceFormatter from "@/components/PriceFormatter";
 import { Check, Home, Package, ShoppingBag } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -9,48 +9,46 @@ import Link from "next/link";
 
 import { client } from "@/sanity/lib/client";
 import { defineQuery } from "next-sanity";
-import { useAuth } from "@/context/AuthContext";
+import { Order, Product } from "@/sanity.types";
+
+const ORDER_BY_NUMBER_QUERY = defineQuery(`
+  *[_type == 'order' && orderNumber == $orderNumber][0]{
+    ...,
+    products[]{
+      ...,product->
+    }
+  }
+`);
+
+type OrderWithExpandedProducts = Omit<Order, "products"> & {
+  products?: Array<{
+    _key: string;
+    quantity?: number;
+    product?: Product;
+  }>;
+};
 
 const SuccessPage = () => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [orders, setOrders] = useState<any[]>([]);
+  const [order, setOrder] = useState<OrderWithExpandedProducts | null>(null);
   const searchParams = useSearchParams();
   const orderNumber = searchParams.get("orderNumber");
-  const clearCart = useCartStore((state) => state.resetCart);
-  const { user } = useAuth();
-  const userId = user?.uid;
-
-  const query =
-    defineQuery(`*[_type == 'order' && clerkUserId == $userId] | order(orderData desc){
-  ...,products[]{
-    ...,product->
-  }
-}`);
 
   useEffect(() => {
-    if (orderNumber) {
-      clearCart();
-    }
-  }, [orderNumber, clearCart]);
+    if (!orderNumber) return;
 
-  useEffect(() => {
-    const fetchData = async () => {
-      if (!userId) {
-        console.log("User ID not found. Cannot fetch orders.");
-        return;
-      }
-
+    const fetchOrder = async () => {
       try {
-        const ordersData = await client.fetch(query, { userId });
-        setOrders(ordersData);
-        console.log("Fetched orders:", ordersData);
+        const orderData = await client.fetch(ORDER_BY_NUMBER_QUERY, {
+          orderNumber,
+        });
+        setOrder(orderData);
       } catch (error) {
-        console.error("Error fetching orders:", error);
+        console.error("Error fetching order:", error);
       }
     };
 
-    fetchData();
-  }, [userId, query]);
+    fetchOrder();
+  }, [orderNumber]);
 
   return (
     <div className="py-10 bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center p-4">
@@ -70,13 +68,12 @@ const SuccessPage = () => {
         </motion.div>
 
         <h1 className="text-3xl font-bold text-gray-900 mb-4">
-          Order Confirmed!
+          Order Placed!
         </h1>
         <div className="space-y-4 mb-8 text-left">
           <p className="text-gray-700">
-            Thank you for your purchase. We&apos;re processing your order and
-            will ship it soon. A confirmation email with your order details will
-            be sent to your inbox shortly.
+            Thank you for your order. We&apos;ll contact you shortly to
+            confirm the details and arrange payment on delivery.
           </p>
           <p className="text-gray-700">
             Order Number:{" "}
@@ -84,35 +81,44 @@ const SuccessPage = () => {
           </p>
         </div>
 
-        <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-8">
-          <h2 className="font-semibold text-gray-900 mb-2">
-            What&apos;s Next?
-          </h2>
-          <ul className="text-gray-700 text-sm space-y-1">
-            <li>Check your email for order confirmation</li>
-            <li>We&apos;ll notify you when your order ships</li>
-            <li>Track your order status anytime</li>
-          </ul>
-        </div>
-
-        <div className="mb-8">
-          <h3 className="font-semibold text-gray-900 mb-2">Recent Orders</h3>
-          <div className="space-y-2">
-            {orders.map((order) => (
-              <div
-                key={order?._id}
-                className="flex justify-between items-center bg-gray-50 p-2 rounded"
-              >
-                <span className="text-gray-700 text-sm font-medium">
-                  {order?._id}
-                </span>
-                <span className="text-sm font-medium px-2 py-1 bg-gray-200 rounded-full">
-                  {order.status}
-                </span>
-              </div>
-            ))}
+        {order && (
+          <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-8 text-left space-y-3">
+            <div className="flex justify-between items-center">
+              <h2 className="font-semibold text-gray-900">Order Summary</h2>
+              <span className="text-xs font-medium px-2 py-1 bg-gray-200 rounded-full capitalize">
+                {order.status}
+              </span>
+            </div>
+            <div className="text-sm text-gray-700 space-y-1">
+              {order.products?.map((item) => (
+                <div key={item._key} className="flex justify-between">
+                  <span className="line-clamp-1">
+                    {item.product?.name}{" "}
+                    <span className="text-gray-500">x{item.quantity}</span>
+                  </span>
+                </div>
+              ))}
+            </div>
+            {order.shippingAddress && (
+              <p className="text-sm text-gray-700">
+                Shipping to: {order.shippingAddress.line1}
+                {order.shippingAddress.line2
+                  ? `, ${order.shippingAddress.line2}`
+                  : ""}
+                , {order.shippingAddress.city}
+              </p>
+            )}
+            {order.shippingMethod && (
+              <p className="text-sm text-gray-700">
+                Shipping method: {order.shippingMethod.title}
+              </p>
+            )}
+            <div className="flex justify-between font-semibold text-gray-900 pt-2 border-t">
+              <span>Total</span>
+              <PriceFormatter amount={order.totalPrice} />
+            </div>
           </div>
-        </div>
+        )}
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <Link

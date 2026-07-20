@@ -46,7 +46,7 @@ const AddToCartButton = ({ product, className }: Props) => {
   const isOutOfStock = product?.stock === 0;
 
   return (
-    <div className="w-full h-12 flex items-center">
+    <div className="flex-1 h-12 flex items-center">
       <Button
         onClick={() => window.open(getBuyLink(product), "_blank", "noopener")}
         disabled={isOutOfStock}

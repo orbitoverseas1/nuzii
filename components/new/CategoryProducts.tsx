@@ -2,13 +2,16 @@
 
 import { FEATURED_CATEGORIES_QUERYResult, Product } from "@/sanity.types";
 import { Button } from "../ui/button";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { client } from "@/sanity/lib/client";
 import { motion, AnimatePresence } from "motion/react";
 import { Loader2 } from "lucide-react";
 import ProductCard from "../ProductCard";
+import Pagination from "./Pagination";
 import Title from "../Title";
 import NoProductAvailable from "./NoProductAvailable";
+
+const PAGE_SIZE = 12;
 
 interface Props {
   categories: FEATURED_CATEGORIES_QUERYResult;
@@ -19,6 +22,7 @@ const CategoryProducts = ({ categories, slug }: Props) => {
   const [currentSlug, setCurrentSlug] = useState(slug);
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
+  const [page, setPage] = useState(1);
 
   const fetchProducts = async (categorySlug: string) => {
     try {
@@ -40,7 +44,14 @@ const CategoryProducts = ({ categories, slug }: Props) => {
 
   useEffect(() => {
     fetchProducts(currentSlug);
+    setPage(1);
   }, [currentSlug]);
+
+  const totalPages = Math.max(1, Math.ceil(products.length / PAGE_SIZE));
+  const paginatedProducts = useMemo(
+    () => products.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE),
+    [products, page]
+  );
 
   const selectedTitle =
     currentSlug === "all"
@@ -96,20 +107,28 @@ const CategoryProducts = ({ categories, slug }: Props) => {
               </motion.div>
             </div>
           ) : products.length ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5">
-              {products.map((product) => (
-                <AnimatePresence key={product._id}>
-                  <motion.div
-                    layout
-                    initial={{ opacity: 0.2 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                  >
-                    <ProductCard product={product} />
-                  </motion.div>
-                </AnimatePresence>
-              ))}
-            </div>
+            <>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5">
+                {paginatedProducts.map((product) => (
+                  <AnimatePresence key={product._id}>
+                    <motion.div
+                      layout
+                      initial={{ opacity: 0.2 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                    >
+                      <ProductCard product={product} />
+                    </motion.div>
+                  </AnimatePresence>
+                ))}
+              </div>
+              <Pagination
+                currentPage={page}
+                totalPages={totalPages}
+                onPageChange={setPage}
+                className="mt-8"
+              />
+            </>
           ) : (
             <NoProductAvailable
               selectedTab={selectedTitle || currentSlug}

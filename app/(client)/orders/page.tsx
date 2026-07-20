@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import Container from "@/components/Container";
 import OrdersComponent from "@/components/OrdersComponent";
+import Pagination from "@/components/new/Pagination";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
@@ -14,11 +15,14 @@ import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 import { Order } from "@/sanity.types";
 
+const PAGE_SIZE = 10;
+
 const OrdersPage = () => {
   const { user, loading } = useAuth();
   const router = useRouter();
   const [orders, setOrders] = useState<Order[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -43,6 +47,12 @@ const OrdersPage = () => {
       fetchOrders();
     }
   }, [user, loading, router]);
+
+  const totalPages = Math.max(1, Math.ceil(orders.length / PAGE_SIZE));
+  const paginatedOrders = useMemo(
+    () => orders.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE),
+    [orders, page]
+  );
 
   if (loading || isLoading) {
     return (
@@ -78,15 +88,21 @@ const OrdersPage = () => {
                       <TableHead>Total</TableHead>
                       <TableHead>Status</TableHead>
                       <TableHead className="hidden sm:table-cell">
-                        Invoice Number
+                        Shipping Method
                       </TableHead>
                       <TableHead>Action</TableHead>
                     </TableRow>
                   </TableHeader>
-                  <OrdersComponent orders={orders} />
+                  <OrdersComponent orders={paginatedOrders} />
                 </Table>
                 <ScrollBar orientation="horizontal" />
               </ScrollArea>
+              <Pagination
+                currentPage={page}
+                totalPages={totalPages}
+                onPageChange={setPage}
+                className="mt-6"
+              />
             </CardContent>
           </Card>
         ) : (

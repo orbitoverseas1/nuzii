@@ -42,6 +42,21 @@ export const socialMediaLinks = [
   { title: "WhatsApp Support", href: "https://wa.me/94762537608", platform: "whatsapp" },
 ];
 
+export const shippingMethods = [
+  {
+    id: "standard",
+    title: "Standard Delivery",
+    description: "3-5 business days",
+    cost: 350,
+  },
+  {
+    id: "express",
+    title: "Express Delivery",
+    description: "1-2 business days",
+    cost: 650,
+  },
+];
+
 export const faqsData = [
   {
     question: "What services does NUZII offer?",

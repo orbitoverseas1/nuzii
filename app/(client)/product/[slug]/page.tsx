@@ -1,16 +1,14 @@
 import AddToCartButton from "@/components/AddToCartButton";
+import AddToBagButton from "@/components/AddToBagButton";
+import WishlistButton from "@/components/WishlistButton";
 import Container from "@/components/Container";
 import ImageView from "@/components/new/ImageView";
 import PriceView from "@/components/PriceView";
 import ProductCharacteristics from "@/components/ProductCharacteristics";
+import ProductPageActions from "@/components/new/ProductPageActions";
 import { getProductBySlug } from "@/sanity/helpers";
-import { Heart } from "lucide-react";
 import { notFound } from "next/navigation";
 import React from "react";
-import { FaRegQuestionCircle } from "react-icons/fa";
-import { FiShare2 } from "react-icons/fi";
-
-import { TbTruckDelivery } from "react-icons/tb";
 import { PortableText } from "@portabletext/react";
 
 const ProductPage = async ({
@@ -118,26 +116,17 @@ const ProductPage = async ({
               product={product}
               className="bg-darkColor/80 text-white hover:bg-darkColor hoverEffect"
             />
-            <button className="border-2 border-darkColor/30 text-darkColor/60 px-2.5 py-1.5 rounded-md hover:text-darkColor hover:border-darkColor hoverEffect">
-              <Heart className="w-5 h-5" />
-            </button>
+            <AddToBagButton
+              product={product}
+              className="w-12 h-12 shrink-0 border-2"
+            />
+            <WishlistButton
+              product={product}
+              className="border-2 border-darkColor/30 text-darkColor/60 px-2.5 py-1.5 rounded-md hover:text-darkColor hover:border-darkColor hoverEffect"
+            />
           </div>
           <ProductCharacteristics product={product} />
-          <div className="flex flex-wrap items-center justify-between gap-2.5 border-b border-b-gray-200 py-5 -mt-2">
-
-            <div className="flex items-center gap-2 text-sm text-black hover:text-red-600 hoverEffect">
-              <FaRegQuestionCircle className="text-lg" />
-              <p>Ask a question</p>
-            </div>
-            <div className="flex items-center gap-2 text-sm text-black hover:text-red-600 hoverEffect">
-              <TbTruckDelivery className="text-lg" />
-              <p>Delivery & Return</p>
-            </div>
-            <div className="flex items-center gap-2 text-sm text-black hover:text-red-600 hoverEffect">
-              <FiShare2 className="text-lg" />
-              <p>Share</p>
-            </div>
-          </div>
+          <ProductPageActions product={product} />
           <div className="flex flex-wrap items-center gap-5">
             <div className="border border-darkBlue/20 text-center p-3 hover:border-darkBlue hoverEffect rounded-md">
               <p className="text-base font-semibold text-black">

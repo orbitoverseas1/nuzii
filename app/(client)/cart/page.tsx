@@ -2,23 +2,17 @@
 import Container from "@/components/Container";
 import PriceFormatter from "@/components/PriceFormatter";
 import QuantityButtons from "@/components/QuantityButtons";
+import WishlistButton from "@/components/WishlistButton";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { urlFor } from "@/sanity/lib/image";
 import useCartStore from "@/store";
-import { useAuth } from "@/context/AuthContext";
-import { Heart, ShoppingBag, Trash } from "lucide-react";
+import { ShoppingBag, Trash } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import EmptyCart from "@/components/EmptyCart";
-import NoAccessToCart from "@/components/NoAccessToCart";
-import {
-  createCheckoutSession,
-  Metadata,
-} from "@/actions/createCheckoutSession";
-import paypalLogo from "@/images/paypalLogo.png";
 import {
   Tooltip,
   TooltipContent,
@@ -36,9 +30,8 @@ const CartPage = () => {
     resetCart,
   } = useCartStore();
   const [isClient, setIsClient] = useState(false);
-  const [loading, setLoading] = useState(false);
   const groupedItems = useCartStore((state) => state.getGroupedItems());
-  const { user } = useAuth();
+  const router = useRouter();
 
   useEffect(() => {
     setIsClient(true);
@@ -55,24 +48,8 @@ const CartPage = () => {
     }
   };
 
-  const handleCheckout = async () => {
-    setLoading(true);
-    try {
-      const metadata: Metadata = {
-        orderNumber: crypto.randomUUID(),
-        customerName: user?.displayName ?? "Unknown",
-        customerEmail: user?.email ?? "Unknown",
-        userId: user!.uid,
-      };
-      const checkoutUrl = await createCheckoutSession(groupedItems, metadata);
-      if (checkoutUrl) {
-        window.location.href = checkoutUrl;
-      }
-    } catch (error) {
-      console.error("Error creating checkout session:", error);
-    } finally {
-      setLoading(false);
-    }
+  const handleCheckout = () => {
+    router.push("/checkout");
   };
 
   const handleDeleteProduct = (id: string) => {
@@ -81,8 +58,7 @@ const CartPage = () => {
   };
   return (
     <div className="bg-gray-50 pb-52 md:pb-10">
-      {user ? (
-        <Container>
+      <Container>
           {groupedItems?.length ? (
             <>
               <div className="flex items-center gap-2 py-5">
@@ -137,8 +113,11 @@ const CartPage = () => {
                               <div className="flex items-center gap-2">
                                 <TooltipProvider>
                                   <Tooltip>
-                                    <TooltipTrigger>
-                                      <Heart className="w-4 h-4 md:w-5 md:h-5 mr-1 text-gray-500 hover:text-red-600 hoverEffect" />
+                                    <TooltipTrigger asChild>
+                                      <WishlistButton
+                                        product={product}
+                                        className="mr-1"
+                                      />
                                     </TooltipTrigger>
                                     <TooltipContent className="font-bold">
                                       Add to Favorite
@@ -211,22 +190,11 @@ const CartPage = () => {
                       </div>
                       <Button
                         onClick={handleCheckout}
-                        disabled={loading}
                         className="w-full cursor-pointer rounded-full font-semibold tracking-wide"
                         size="lg"
                       >
-                        {loading ? "Processing" : "Proceed to Checkout"}
+                        Proceed to Checkout
                       </Button>
-                      <Link
-                        href="/"
-                        className="text-center text-sm text-darkColor hover:underline border border-darkColor/50 rounded-full flex items-center justify-center py-2 hover:bg-darkColor/5 hover:border-darkColor hoverEffect"
-                      >
-                        <Image
-                          src={paypalLogo}
-                          className="w-20"
-                          alt="paypalLogo"
-                        />
-                      </Link>
                     </div>
                   </div>
                 </div>
@@ -259,22 +227,11 @@ const CartPage = () => {
                       </div>
                       <Button
                         onClick={handleCheckout}
-                        disabled={loading}
                         className="w-full rounded-full font-semibold tracking-wide"
                         size="lg"
                       >
-                        {loading ? "Processing" : "Proceed to Checkout"}
+                        Proceed to Checkout
                       </Button>
-                      <Link
-                        href="/"
-                        className="text-center text-sm text-darkColor hover:underline border border-darkColor/50 rounded-full flex items-center justify-center py-2 hover:bg-darkColor/5 hover:border-darkColor hoverEffect"
-                      >
-                        <Image
-                          src={paypalLogo}
-                          className="w-20"
-                          alt="paypalLogo"
-                        />
-                      </Link>
                     </div>
                   </div>
                 </div>
@@ -283,10 +240,7 @@ const CartPage = () => {
           ) : (
             <EmptyCart />
           )}
-        </Container>
-      ) : (
-        <NoAccessToCart />
-      )}
+      </Container>
     </div>
   );
 };
