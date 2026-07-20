@@ -3,20 +3,44 @@ import { getDiscountedPrice } from "./lib/productPricing";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
+export interface SelectedVariant {
+  _key?: string;
+  color?: string;
+  size?: string;
+  sku?: string;
+  priceOverride?: number;
+  stock?: number;
+}
+
 export interface CartItem {
   product: Product;
   quantity: number;
+  selectedVariant?: SelectedVariant;
 }
+
+export const getCartLineKey = (
+  productId: string,
+  selectedVariant?: SelectedVariant
+) =>
+  `${productId}::${selectedVariant?.color ?? ""}::${selectedVariant?.size ?? ""}`;
+
+const lineKeyOf = (item: CartItem) =>
+  getCartLineKey(item.product._id, item.selectedVariant);
+
+const lineUnitPrice = (item: CartItem) => {
+  const basePrice = item.selectedVariant?.priceOverride ?? item.product.price;
+  return getDiscountedPrice(basePrice, item.product.discount);
+};
 
 interface CartState {
   items: CartItem[];
-  addItem: (product: Product) => void;
-  removeItem: (productId: string) => void;
-  deleteCartProduct: (productId: string) => void;
+  addItem: (product: Product, selectedVariant?: SelectedVariant) => void;
+  removeItem: (lineKey: string) => void;
+  deleteCartProduct: (lineKey: string) => void;
   resetCart: () => void;
   getTotalPrice: () => number;
   getSubTotalPrice: () => number;
-  getItemCount: (productId: string) => number;
+  getItemCount: (lineKey: string) => number;
   getGroupedItems: () => CartItem[];
 }
 
@@ -24,27 +48,33 @@ const useCartStore = create<CartState>()(
   persist(
     (set, get) => ({
       items: [],
-      addItem: (product) =>
+      addItem: (product, selectedVariant) =>
         set((state) => {
+          const key = getCartLineKey(product._id, selectedVariant);
           const existingItem = state.items.find(
-            (item) => item.product._id === product._id
+            (item) => lineKeyOf(item) === key
           );
           if (existingItem) {
             return {
               items: state.items.map((item) =>
-                item.product._id === product._id
+                lineKeyOf(item) === key
                   ? { ...item, quantity: item.quantity + 1 }
                   : item
               ),
             };
           } else {
-            return { items: [...state.items, { product, quantity: 1 }] };
+            return {
+              items: [
+                ...state.items,
+                { product, quantity: 1, selectedVariant },
+              ],
+            };
           }
         }),
-      removeItem: (productId) =>
+      removeItem: (lineKey) =>
         set((state) => ({
           items: state.items.reduce((acc, item) => {
-            if (item.product._id === productId) {
+            if (lineKeyOf(item) === lineKey) {
               if (item.quantity > 1) {
                 acc.push({ ...item, quantity: item.quantity - 1 });
               }
@@ -54,30 +84,26 @@ const useCartStore = create<CartState>()(
             return acc;
           }, [] as CartItem[]),
         })),
-      deleteCartProduct: (productId) =>
+      deleteCartProduct: (lineKey) =>
         set((state) => ({
-          items: state.items.filter(
-            ({ product }) => product?._id !== productId
-          ),
+          items: state.items.filter((item) => lineKeyOf(item) !== lineKey),
         })),
       resetCart: () => set({ items: [] }),
       getTotalPrice: () => {
-        return get().items.reduce((total, item) => {
-          const price = getDiscountedPrice(
-            item.product.price,
-            item.product.discount
-          );
-          return total + price * item.quantity;
-        }, 0);
+        return get().items.reduce(
+          (total, item) => total + lineUnitPrice(item) * item.quantity,
+          0
+        );
       },
       getSubTotalPrice: () => {
         return get().items.reduce((total, item) => {
-          const price = item.product.price ?? 0;
-          return total + price * item.quantity;
+          const basePrice =
+            item.selectedVariant?.priceOverride ?? item.product.price ?? 0;
+          return total + basePrice * item.quantity;
         }, 0);
       },
-      getItemCount: (productId) => {
-        const item = get().items.find((item) => item.product._id === productId);
+      getItemCount: (lineKey) => {
+        const item = get().items.find((item) => lineKeyOf(item) === lineKey);
         return item ? item.quantity : 0;
       },
       getGroupedItems: () => get().items,

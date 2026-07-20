@@ -1,11 +1,14 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { client } from "@/sanity/lib/client";
 import ProductCard from "@/components/ProductCard";
+import Pagination from "@/components/new/Pagination";
 import { motion, AnimatePresence } from "motion/react";
 import { ChevronDown, Loader2 } from "lucide-react";
 import { FEATURED_CATEGORIES_QUERYResult, ALL_PRODUCTS_QUERYResult } from "@/sanity.types";
+
+const PAGE_SIZE = 12;
 
 interface AllProductsSectionProps {
     categories: FEATURED_CATEGORIES_QUERYResult;
@@ -20,6 +23,7 @@ export default function AllProductsSection({
     const [products, setProducts] = useState(initialProducts);
     const [loading, setLoading] = useState(false);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const [page, setPage] = useState(1);
 
     const fetchProducts = async (categorySlug: string) => {
         try {
@@ -48,7 +52,14 @@ export default function AllProductsSection({
         } else {
             setProducts(initialProducts);
         }
+        setPage(1);
     }, [selectedCategory, initialProducts]);
+
+    const totalPages = Math.max(1, Math.ceil(products.length / PAGE_SIZE));
+    const paginatedProducts = useMemo(
+        () => products.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE),
+        [products, page]
+    );
 
     const currentCategoryName =
         selectedCategory === "all"
@@ -141,7 +152,7 @@ export default function AllProductsSection({
                             className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
                         >
                             {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                            {products.map((product: any) => (
+                            {paginatedProducts.map((product: any) => (
                                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                 <ProductCard key={product._id} product={product as any} />
                             ))}
@@ -155,12 +166,17 @@ export default function AllProductsSection({
                     </div>
                 )}
 
-                {/* Product Count */}
+                {/* Product Count + Pagination */}
                 {!loading && products?.length > 0 && (
-                    <div className="text-center mt-8">
+                    <div className="text-center mt-8 space-y-4">
                         <p className="text-nuziiTextLight font-light">
-                            Showing {products.length} product{products.length !== 1 ? "s" : ""}
+                            Showing {paginatedProducts.length} of {products.length} product{products.length !== 1 ? "s" : ""}
                         </p>
+                        <Pagination
+                            currentPage={page}
+                            totalPages={totalPages}
+                            onPageChange={setPage}
+                        />
                     </div>
                 )}
             </div>

@@ -4,9 +4,12 @@ import React from "react";
 import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
 import { getDiscountAmount, getDiscountedPrice } from "@/lib/productPricing";
+import { isProductOutOfStock } from "@/lib/productStock";
+import { SelectedVariant } from "@/store";
 
 interface Props {
   product: Product;
+  selectedVariant?: SelectedVariant;
   className?: string;
 }
 
@@ -19,17 +22,19 @@ const formatPrice = (amount: number | undefined) =>
     minimumFractionDigits: 2,
   });
 
-const getBuyLink = (product: Product) => {
-  const discountAmount = getDiscountAmount(product?.price, product?.discount);
-  const finalPrice = getDiscountedPrice(product?.price, product?.discount);
+const getBuyLink = (product: Product, selectedVariant?: SelectedVariant) => {
+  const price = selectedVariant?.priceOverride ?? product?.price;
+  const discountAmount = getDiscountAmount(price, product?.discount);
+  const finalPrice = getDiscountedPrice(price, product?.discount);
   const productUrl = product?.slug?.current
     ? `${window.location.origin}/product/${product.slug.current}`
     : window.location.href;
   const productDetails = [
     `Hi NUZII, I would like to buy this product: ${product?.name ?? "Product"}`,
+    selectedVariant?.color ? `Color: ${selectedVariant.color}` : null,
+    selectedVariant?.size ? `Size: ${selectedVariant.size}` : null,
     product?.variantInfo ? `Variant: ${product.variantInfo}` : null,
-    product?.variant ? `Type: ${product.variant}` : null,
-    discountAmount ? `Original price: ${formatPrice(product?.price)}` : null,
+    discountAmount ? `Original price: ${formatPrice(price)}` : null,
     discountAmount ? `Discount: ${formatPrice(discountAmount)}` : null,
     `Price: ${formatPrice(finalPrice)}`,
     `Product link: ${productUrl}`,
@@ -42,13 +47,15 @@ const getBuyLink = (product: Product) => {
   )}`;
 };
 
-const AddToCartButton = ({ product, className }: Props) => {
-  const isOutOfStock = product?.stock === 0;
+const AddToCartButton = ({ product, selectedVariant, className }: Props) => {
+  const isOutOfStock = isProductOutOfStock(product, selectedVariant);
 
   return (
-    <div className="w-full h-12 flex items-center">
+    <div className="flex-1 h-12 flex items-center">
       <Button
-        onClick={() => window.open(getBuyLink(product), "_blank", "noopener")}
+        onClick={() =>
+          window.open(getBuyLink(product, selectedVariant), "_blank", "noopener")
+        }
         disabled={isOutOfStock}
         className={cn(
           "w-full bg-transparent text-darkColor shadow-none border border-darkColor/30 font-semibold tracking-wide hover:text-white cursor-pointer hoverEffect",

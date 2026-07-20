@@ -2,23 +2,32 @@ import React from "react";
 import { Button } from "./ui/button";
 import { HiMinus, HiPlus } from "react-icons/hi2";
 import toast from "react-hot-toast";
-import useCartStore from "@/store";
+import useCartStore, { SelectedVariant, getCartLineKey } from "@/store";
 import { Product } from "@/sanity.types";
 import { twMerge } from "tailwind-merge";
 
 interface Props {
   product: Product;
+  selectedVariant?: SelectedVariant;
   className?: string;
   borderStyle?: string;
 }
 
-const QuantityButtons = ({ product, className, borderStyle }: Props) => {
+const QuantityButtons = ({
+  product,
+  selectedVariant,
+  className,
+  borderStyle,
+}: Props) => {
   const { addItem, removeItem, getItemCount } = useCartStore();
-  const itemCount = getItemCount(product?._id);
-  const isOutOfStock = product?.stock === 0;
+  const lineKey = getCartLineKey(product?._id, selectedVariant);
+  const itemCount = getItemCount(lineKey);
+  const isOutOfStock = selectedVariant
+    ? (selectedVariant.stock ?? 0) <= 0
+    : product?.stock === 0;
 
   const handleRemoveProduct = () => {
-    removeItem(product?._id);
+    removeItem(lineKey);
     if (itemCount > 1) {
       toast.success("Quantity Decreased successfully!");
     } else {
@@ -50,7 +59,7 @@ const QuantityButtons = ({ product, className, borderStyle }: Props) => {
         size="icon"
         className="w-6 h-6 cursor-pointer"
         onClick={() => {
-          addItem(product);
+          addItem(product, selectedVariant);
           toast.success("Quantity increased successfully!");
         }}
         disabled={isOutOfStock}

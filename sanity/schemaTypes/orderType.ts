@@ -13,31 +13,11 @@ export const orderType = defineType({
       type: "string",
       validation: (Rule) => Rule.required(),
     }),
-    {
-      name: "invoice",
-      type: "object",
-      fields: [
-        { name: "id", type: "string" },
-        { name: "number", type: "string" },
-        { name: "hosted_invoice_url", type: "url" },
-      ],
-    },
-    defineField({
-      name: "stripeCheckoutSessionId",
-      title: "Stripe Checkout Session ID",
-      type: "string",
-    }),
-    defineField({
-      name: "stripeCustomerId",
-      title: "Stripe Customer ID",
-      type: "string",
-      validation: (Rule) => Rule.required(),
-    }),
     defineField({
       name: "clerkUserId",
       title: "Store User ID",
+      description: "Firebase UID of the signed-in customer. Empty for guest checkouts.",
       type: "string",
-      validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: "customerName",
@@ -52,10 +32,45 @@ export const orderType = defineType({
       validation: (Rule) => Rule.required().email(),
     }),
     defineField({
-      name: "stripePaymentIntentId",
-      title: "Stripe Payment Intent ID",
+      name: "phone",
+      title: "Customer Phone",
       type: "string",
       validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: "shippingAddress",
+      title: "Shipping Address",
+      type: "object",
+      validation: (Rule) => Rule.required(),
+      fields: [
+        defineField({ name: "line1", title: "Address Line 1", type: "string", validation: (Rule) => Rule.required() }),
+        defineField({ name: "line2", title: "Address Line 2", type: "string" }),
+        defineField({ name: "city", title: "City", type: "string", validation: (Rule) => Rule.required() }),
+        defineField({ name: "postalCode", title: "Postal Code", type: "string" }),
+        defineField({ name: "country", title: "Country", type: "string", initialValue: "Sri Lanka", validation: (Rule) => Rule.required() }),
+      ],
+      preview: {
+        select: { line1: "line1", city: "city" },
+        prepare({ line1, city }) {
+          return { title: [line1, city].filter(Boolean).join(", ") };
+        },
+      },
+    }),
+    defineField({
+      name: "shippingMethod",
+      title: "Shipping Method",
+      type: "object",
+      validation: (Rule) => Rule.required(),
+      fields: [
+        defineField({ name: "title", title: "Method", type: "string", validation: (Rule) => Rule.required() }),
+        defineField({ name: "cost", title: "Cost", type: "number", validation: (Rule) => Rule.required().min(0) }),
+      ],
+    }),
+    defineField({
+      name: "paymentGatewayReference",
+      title: "Payment Gateway Reference",
+      description: "Transaction/reference ID from the payment gateway once integrated.",
+      type: "string",
     }),
     defineField({
       name: "products",
@@ -76,18 +91,38 @@ export const orderType = defineType({
               title: "Quantity Purchased",
               type: "number",
             }),
+            defineField({
+              name: "variantColor",
+              title: "Color",
+              type: "string",
+            }),
+            defineField({
+              name: "variantSize",
+              title: "Size",
+              type: "string",
+            }),
+            defineField({
+              name: "variantSku",
+              title: "SKU",
+              type: "string",
+            }),
           ],
           preview: {
             select: {
               product: "product.name",
               quantity: "quantity",
+              color: "variantColor",
+              size: "variantSize",
               image: "product.image",
               price: "product.price",
               currency: "product.currency",
             },
             prepare(select) {
+              const variant = [select.color, select.size]
+                .filter(Boolean)
+                .join(" / ");
               return {
-                title: `${select.product} x ${select.quantity}`,
+                title: `${select.product}${variant ? ` (${variant})` : ""} x ${select.quantity}`,
                 subtitle: `${select.price * select.quantity}`,
                 media: select.image,
               };

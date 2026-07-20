@@ -5,7 +5,7 @@ export const getMyOrders = async (userId: string) => {
     if (!userId) {
         throw new Error("User ID is required");
     }
-    const MY_ORDERS_QUERY = `*[_type == 'order' && clerkUserId == $userId] | order(orderData desc){
+    const MY_ORDERS_QUERY = `*[_type == 'order' && clerkUserId == $userId] | order(orderDate desc){
     ...,products[]{
       ...,product->
     }

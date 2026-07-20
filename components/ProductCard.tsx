@@ -5,9 +5,14 @@ import React from "react";
 import PriceView from "./PriceView";
 import Link from "next/link";
 import AddToCartButton from "./AddToCartButton";
+import AddToBagButton from "./AddToBagButton";
+import WishlistButton from "./WishlistButton";
 import Title from "./Title";
+import { isProductOutOfStock } from "@/lib/productStock";
 
 const ProductCard = ({ product }: { product: Product }) => {
+  const inStock = !isProductOutOfStock(product);
+
   return (
     <div className="rounded-lg overflow-hidden group text-sm">
       <div className="overflow-hidden relative" style={{ backgroundColor: '#f2e6e5' }}>
@@ -20,7 +25,7 @@ const ProductCard = ({ product }: { product: Product }) => {
               height={500}
               // loading="lazy"
               priority
-              className={`w-full h-72 object-contain overflow-hidden  transition-transform duration-500 ${product?.stock !== 0 && "group-hover:scale-105"}`}
+              className={`w-full h-72 object-contain overflow-hidden  transition-transform duration-500 ${inStock && "group-hover:scale-105"}`}
             />
           </Link>
         )}
@@ -33,7 +38,11 @@ const ProductCard = ({ product }: { product: Product }) => {
           discount={product?.discount}
           className="text-lg"
         />
-        <AddToCartButton product={product} />
+        <div className="flex items-center gap-2">
+          <AddToCartButton product={product} />
+          <AddToBagButton product={product} className="w-12 h-12 shrink-0" />
+          <WishlistButton product={product} className="w-12 h-12 shrink-0 flex items-center justify-center border border-darkColor/30 rounded-md" />
+        </div>
       </div>
     </div>
   );
