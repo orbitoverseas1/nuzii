@@ -5,10 +5,11 @@ import HeaderMenu from "./new/HeaderMenu";
 import Logo from "./new/Logo";
 import MobileMenu from "./new/MobileMenu";
 import SearchBar from "./new/SearchBar";
-import UserMenu from "./new/UserMenu";
+// Account feature is temporarily hidden — keep imports for easy restore.
+// import UserMenu from "./new/UserMenu";
 import CartIcon from "./new/CartIcon";
 import WishlistIcon from "./new/WishlistIcon";
-import OrdersIcon from "./new/OrdersIcon";
+// import OrdersIcon from "./new/OrdersIcon";
 
 const Header = async () => {
   const categories = await getAllCategories(3);
@@ -36,8 +37,9 @@ const Header = async () => {
           <SearchBar />
           <WishlistIcon />
           <CartIcon />
-          <OrdersIcon />
-          <UserMenu />
+          {/* Account feature temporarily hidden — restore when the client wants it back. */}
+          {/* <OrdersIcon /> */}
+          {/* <UserMenu /> */}
         </div>
       </Container>
     </header>

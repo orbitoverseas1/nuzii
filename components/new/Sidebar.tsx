@@ -153,6 +153,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, categories }) => {
                   Contact
                 </Link>
 
+                {/* Account feature temporarily hidden — restore when the client wants it back.
                 <Link
                   onClick={onClose}
                   href="/orders"
@@ -163,6 +164,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, categories }) => {
                 >
                   My Orders
                 </Link>
+                */}
               </div>
 
               {/* Footer */}

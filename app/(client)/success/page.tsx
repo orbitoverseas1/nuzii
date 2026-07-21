@@ -1,7 +1,7 @@
 "use client";
 
 import PriceFormatter from "@/components/PriceFormatter";
-import { Check, Home, Package, ShoppingBag } from "lucide-react";
+import { Check, Home, ShoppingBag } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
@@ -128,7 +128,7 @@ const SuccessPage = () => {
           </div>
         )}
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Link
             href="/"
             className="flex items-center justify-center px-4 py-3 font-semibold bg-black text-white rounded-lg hover:bg-gray-800 transition-all duration-300 shadow-md"
@@ -136,6 +136,7 @@ const SuccessPage = () => {
             <Home className="w-5 h-5 mr-2" />
             Home
           </Link>
+          {/* Account feature temporarily hidden — restore when the client wants it back.
           <Link
             href="/orders"
             className="flex items-center justify-center px-4 py-3 font-semibold bg-white text-black border border-black rounded-lg hover:bg-gray-100 transition-all duration-300 shadow-md"
@@ -143,6 +144,7 @@ const SuccessPage = () => {
             <Package className="w-5 h-5 mr-2" />
             Orders
           </Link>
+          */}
           <Link
             href="/"
             className="flex items-center justify-center px-4 py-3 font-semibold bg-black text-white rounded-lg hover:bg-gray-800 transition-all duration-300 shadow-md"
