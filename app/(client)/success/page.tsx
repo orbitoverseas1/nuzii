@@ -3,7 +3,7 @@
 import PriceFormatter from "@/components/PriceFormatter";
 import { Check, Home, ShoppingBag } from "lucide-react";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 
@@ -30,7 +30,7 @@ type OrderWithExpandedProducts = Omit<Order, "products"> & {
   }>;
 };
 
-const SuccessPage = () => {
+const SuccessContent = () => {
   const [order, setOrder] = useState<OrderWithExpandedProducts | null>(null);
   const searchParams = useSearchParams();
   const orderNumber = searchParams.get("orderNumber");
@@ -157,5 +157,17 @@ const SuccessPage = () => {
     </div>
   );
 };
+
+const SuccessPage = () => (
+  <Suspense
+    fallback={
+      <div className="py-20 flex items-center justify-center text-gray-500">
+        Loading your order…
+      </div>
+    }
+  >
+    <SuccessContent />
+  </Suspense>
+);
 
 export default SuccessPage;

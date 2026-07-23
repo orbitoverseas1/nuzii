@@ -2,6 +2,11 @@
 
 import { backendClient } from "@/sanity/lib/backendClient";
 import { getDiscountedPrice } from "@/lib/productPricing";
+import {
+  sendAdminOrderEmail,
+  sendCustomerOrderEmail,
+  type OrderEmailData,
+} from "@/lib/orderEmails";
 import { GroupedCartItems } from "./checkoutTypes";
 
 export interface ShippingAddress {
@@ -29,6 +34,16 @@ export interface CheckoutDetails {
 const lineBasePrice = (item: GroupedCartItems) =>
   item.selectedVariant?.priceOverride ?? item.product.price ?? 0;
 
+// Human-friendly order number: NZ-YYMMDD-XXXX (date + 4 random digits).
+const generateOrderNumber = () => {
+  const now = new Date();
+  const yy = String(now.getFullYear()).slice(-2);
+  const mm = String(now.getMonth() + 1).padStart(2, "0");
+  const dd = String(now.getDate()).padStart(2, "0");
+  const rand = String(Math.floor(1000 + Math.random() * 9000));
+  return `NZ-${yy}${mm}${dd}-${rand}`;
+};
+
 export async function createOrder(
   items: GroupedCartItems[],
   details: CheckoutDetails
@@ -55,7 +70,7 @@ export async function createOrder(
   );
   const amountDiscount = subtotal - discountedTotal;
   const totalPrice = discountedTotal + details.shippingMethod.cost;
-  const orderNumber = crypto.randomUUID();
+  const orderNumber = generateOrderNumber();
 
   const transaction = backendClient.transaction();
 
@@ -100,6 +115,49 @@ export async function createOrder(
 
   const result = await transaction.commit();
   const order = result.results.find((r) => r.operation === "create");
+
+  // Fire confirmation emails. The order is already committed, so a mail
+  // failure must never throw — swallow and log instead.
+  try {
+    const emailData: OrderEmailData = {
+      orderNumber,
+      customerName: details.customerName,
+      email: details.email,
+      phone: details.phone,
+      shippingAddress: details.shippingAddress,
+      shippingMethod: details.shippingMethod,
+      lines: items.map((item) => {
+        const variantLabel = [item.selectedVariant?.color, item.selectedVariant?.size]
+          .filter(Boolean)
+          .join(" / ");
+        return {
+          name: item.product.name ?? "Product",
+          variantLabel: variantLabel || undefined,
+          quantity: item.quantity,
+          lineTotal:
+            getDiscountedPrice(lineBasePrice(item), item.product.discount) *
+            item.quantity,
+        };
+      }),
+      subtotal,
+      amountDiscount,
+      shippingCost: details.shippingMethod.cost,
+      totalPrice,
+      currency: "lkr",
+    };
+
+    const results = await Promise.allSettled([
+      sendCustomerOrderEmail(emailData),
+      sendAdminOrderEmail(emailData),
+    ]);
+    results.forEach((r) => {
+      if (r.status === "rejected") {
+        console.error("[createOrder] order email failed:", r.reason);
+      }
+    });
+  } catch (error) {
+    console.error("[createOrder] error preparing order emails:", error);
+  }
 
   return { orderNumber, orderId: order?.id };
 }

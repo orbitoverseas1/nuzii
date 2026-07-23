@@ -153,6 +153,9 @@ export const orderType = defineType({
       name: "status",
       title: "Order Status",
       type: "string",
+      description:
+        "Internal fulfilment tracker managed by the store. Update it by hand as you process the order — it does not notify the customer automatically.",
+      initialValue: "pending",
       options: {
         list: [
           {
