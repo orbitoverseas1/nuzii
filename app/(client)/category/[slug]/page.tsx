@@ -13,7 +13,7 @@ const CategoryPage = async ({
 
   return (
     <div>
-      <Container className="py-10">
+      <Container className="max-w-[1600px] py-6 md:px-6 md:py-10">
         <CategoryProducts categories={categories} slug={slug} />
       </Container>
     </div>

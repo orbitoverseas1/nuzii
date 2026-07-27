@@ -13,6 +13,7 @@ interface Props {
   product: Product;
   selectedVariant?: SelectedVariant;
   className?: string;
+  quantity?: number;
   /** When true (default) and the product has variants but none was passed in,
    * the button links to the product page instead of adding an ambiguous line.
    * Set false when rendering inside a variant selector that already resolves a
@@ -33,6 +34,7 @@ const BuyNowButton = ({
   product,
   selectedVariant,
   className,
+  quantity = 1,
   requireSelection = true,
   onBeforeNavigate,
 }: Props) => {
@@ -75,7 +77,7 @@ const BuyNowButton = ({
     setNavigating(true);
 
     onBeforeNavigate?.();
-    addItem(product, selectedVariant);
+    addItem(product, selectedVariant, quantity);
     router.push("/checkout");
   };
 

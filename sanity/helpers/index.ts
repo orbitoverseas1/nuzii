@@ -15,7 +15,11 @@ export const getAllProducts = async () => {
 };
 
 export const getAllCategories = async (quantity?: number) => {
-  const CATEGORIES_QUERY = `*[_type=="category"] | order(name asc)${quantity ? `[0...${quantity}]` : ""}`;
+  const CATEGORIES_QUERY = `*[
+    _type == "category" &&
+    defined(title) &&
+    defined(slug.current)
+  ] | order(title asc)${quantity ? `[0...${quantity}]` : ""}`;
 
   try {
     const categories = await sanityFetch({

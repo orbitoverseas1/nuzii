@@ -85,14 +85,14 @@ const ProductVariantSelector = ({ product, onChange }: Props) => {
                   onClick={() => setSelectedColor(color)}
                   title={color}
                   className={cn(
-                    "w-9 h-9 rounded-full border-2 flex items-center justify-center hoverEffect",
+                    "w-10 h-10 border flex items-center justify-center hoverEffect",
                     selectedColor === color
                       ? "border-darkColor"
                       : "border-darkColor/20"
                   )}
                 >
                   <span
-                    className="w-6 h-6 rounded-full border border-black/10"
+                    className="h-7 w-7 border border-black/10"
                     style={{ backgroundColor: swatch || "#e5e5e5" }}
                   />
                 </button>
@@ -114,9 +114,9 @@ const ProductVariantSelector = ({ product, onChange }: Props) => {
                 type="button"
                 onClick={() => setSelectedSize(size)}
                 className={cn(
-                  "px-4 py-2 rounded-md border text-sm font-medium hoverEffect",
+                  "min-w-12 border px-4 py-2.5 text-sm font-medium hoverEffect",
                   selectedSize === size
-                    ? "border-darkColor bg-darkColor text-white"
+                    ? "border-nuziiRoseGoldDark bg-nuziiRoseGoldDark text-white"
                     : "border-darkColor/30 text-darkColor"
                 )}
               >

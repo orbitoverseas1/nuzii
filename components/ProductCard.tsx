@@ -4,47 +4,74 @@ import Image from "next/image";
 import React from "react";
 import PriceView from "./PriceView";
 import Link from "next/link";
-import BuyNowButton from "./BuyNowButton";
-import AddToBagButton from "./AddToBagButton";
-import WishlistButton from "./WishlistButton";
-import Title from "./Title";
-import { isProductOutOfStock } from "@/lib/productStock";
+import ProductCardAction from "./ProductCardAction";
 
 const ProductCard = ({ product }: { product: Product }) => {
-  const inStock = !isProductOutOfStock(product);
+  const primaryImage = product.images?.[0];
+  const hoverImage = product.images?.[1];
+  const productHref = `/product/${product.slug?.current}`;
 
   return (
-    <div className="rounded-lg overflow-hidden group text-sm">
-      <div className="overflow-hidden relative" style={{ backgroundColor: '#f2e6e5' }}>
-        {product?.images && (
-          <Link href={`/product/${product?.slug?.current}`}>
+    <article className="group flex h-full flex-col overflow-hidden bg-white text-sm">
+      <Link
+        href={productHref}
+        className="relative block aspect-square w-full overflow-hidden bg-nuziiCream"
+        aria-label={`View ${product.name ?? "product"}`}
+      >
+        {primaryImage ? (
+          <>
             <Image
-              src={urlFor(product.images[0]).url()}
-              alt="productImage"
-              width={500}
-              height={500}
-              // loading="lazy"
-              priority
-              className={`w-full h-72 object-contain overflow-hidden  transition-transform duration-500 ${inStock && "group-hover:scale-105"}`}
+              src={urlFor(primaryImage).width(900).height(900).fit("crop").url()}
+              alt={product.name ?? "Product"}
+              fill
+              sizes="(min-width: 1280px) 25vw, (min-width: 768px) 33vw, 50vw"
+              className="object-cover transition-[opacity,transform] duration-500 ease-out motion-reduce:transition-none lg:group-hover:scale-[1.03]"
             />
-          </Link>
+            {hoverImage && (
+              <Image
+                src={urlFor(hoverImage).width(900).height(900).fit("crop").url()}
+                alt=""
+                fill
+                sizes="(min-width: 1280px) 25vw, (min-width: 768px) 33vw, 50vw"
+                className="hidden object-cover opacity-0 transition-[opacity,transform] duration-500 ease-out motion-reduce:transition-none lg:block lg:group-hover:scale-[1.03] lg:group-hover:opacity-100"
+              />
+            )}
+          </>
+        ) : (
+          <div className="flex h-full w-full items-center justify-center text-nuziiTextLight">
+            Image unavailable
+          </div>
         )}
-      </div>
-      <div className="py-3 px-2 flex flex-col gap-1.5 bg-zinc-50 border border-t-0 rounded-md rounded-tl-none rounded-tr-none">
-        <Title className="text-base line-clamp-1">{product?.name}</Title>
-        <p>{product?.variantInfo}</p>
-        <PriceView
-          price={product?.price}
-          discount={product?.discount}
-          className="text-lg"
-        />
-        <div className="flex items-center gap-2">
-          <BuyNowButton product={product} />
-          <AddToBagButton product={product} className="w-12 h-12 shrink-0" />
-          <WishlistButton product={product} className="w-12 h-12 shrink-0 flex items-center justify-center border border-darkColor/30 rounded-md" />
+      </Link>
+
+      <div className="flex flex-1 flex-col items-center px-1 pb-1 pt-3 text-center sm:px-2 sm:pt-4">
+        <h3 className="min-h-10 line-clamp-2 text-sm font-normal leading-5 text-nuziiText sm:min-h-11 sm:text-[0.95rem] sm:leading-snug">
+          <Link
+            href={productHref}
+            className="hover:underline hover:underline-offset-4"
+          >
+            {product.name}
+          </Link>
+        </h3>
+        <div className="mt-1 min-h-4">
+          {product.variantInfo && (
+            <p className="line-clamp-1 text-xs text-nuziiTextLight">
+              {product.variantInfo}
+            </p>
+          )}
+        </div>
+        <div className="mt-2 min-h-5">
+          <PriceView
+            price={product.price}
+            discount={product.discount}
+            className="text-sm font-normal text-nuziiText"
+          />
+        </div>
+        <div className="mt-auto w-full pt-4">
+          <ProductCardAction product={product} />
         </div>
       </div>
-    </div>
+    </article>
   );
 };
 

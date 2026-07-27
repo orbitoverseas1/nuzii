@@ -1,5 +1,5 @@
 import React from "react";
-import localFont from "next/font/local";
+import { Instrument_Sans, Libre_Baskerville } from "next/font/google";
 import { Metadata } from "next";
 import "./globals.css";
 
@@ -8,16 +8,18 @@ export const metadata: Metadata = {
   description: "Elevate Your Everyday Style with NUZII",
 };
 
-const poppins = localFont({
-  src: "./fonts/Poppins.woff2",
-  variable: "--font-poppins",
-  weight: "400",
-  preload: false,
+const instrumentSans = Instrument_Sans({
+  subsets: ["latin"],
+  variable: "--font-instrument-sans",
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
 });
-const raleway = localFont({
-  src: "./fonts/Raleway.woff2",
-  variable: "--font-raleway",
-  weight: "100 900",
+
+const libreBaskerville = Libre_Baskerville({
+  subsets: ["latin"],
+  variable: "--font-libre-baskerville",
+  weight: ["400", "700"],
+  display: "swap",
 });
 
 const RootLayout = ({
@@ -27,7 +29,9 @@ const RootLayout = ({
 }>) => {
   return (
     <html lang="en">
-      <body className={`${poppins.variable} ${raleway.variable} antialiased`}>
+      <body
+        className={`${instrumentSans.variable} ${libreBaskerville.variable} antialiased`}
+      >
         {children}
       </body>
     </html>

@@ -34,7 +34,7 @@ const lineUnitPrice = (item: CartItem) => {
 
 interface CartState {
   items: CartItem[];
-  addItem: (product: Product, selectedVariant?: SelectedVariant) => void;
+  addItem: (product: Product, selectedVariant?: SelectedVariant, quantity?: number) => void;
   removeItem: (lineKey: string) => void;
   deleteCartProduct: (lineKey: string) => void;
   resetCart: () => void;
@@ -48,8 +48,9 @@ const useCartStore = create<CartState>()(
   persist(
     (set, get) => ({
       items: [],
-      addItem: (product, selectedVariant) =>
+      addItem: (product, selectedVariant, quantity = 1) =>
         set((state) => {
+          const amount = Math.max(1, Math.floor(quantity));
           const key = getCartLineKey(product._id, selectedVariant);
           const existingItem = state.items.find(
             (item) => lineKeyOf(item) === key
@@ -58,7 +59,7 @@ const useCartStore = create<CartState>()(
             return {
               items: state.items.map((item) =>
                 lineKeyOf(item) === key
-                  ? { ...item, quantity: item.quantity + 1 }
+                  ? { ...item, quantity: item.quantity + amount }
                   : item
               ),
             };
@@ -66,7 +67,7 @@ const useCartStore = create<CartState>()(
             return {
               items: [
                 ...state.items,
-                { product, quantity: 1, selectedVariant },
+                { product, quantity: amount, selectedVariant },
               ],
             };
           }

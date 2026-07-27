@@ -1,10 +1,9 @@
 @import "tailwindcss";
 
-body {
-  font-family: Arial, Helvetica, sans-serif;
-}
-
 @theme {
+  --font-sans: var(--font-instrument-sans), sans-serif;
+  --font-serif: var(--font-libre-baskerville), serif;
+
   --color-darkColor: #151515;
   --color-lightColor: #52525b;
   --color-lightOrange: #fca99b;
@@ -25,7 +24,6 @@ body {
 }
 
 :root {
-  --font-raleway: "Raleway", sans-serif;
   --background: 0 0% 100%;
   --foreground: 0 0% 3.9%;
   --card: 0 0% 100%;
@@ -91,7 +89,17 @@ body {
 }
 
 body {
-  font-family: var(--font-raleway);
+  font-family: var(--font-instrument-sans), sans-serif;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.font-heading {
+  font-family: var(--font-libre-baskerville), serif;
 }
 
 .fb-customerchat {

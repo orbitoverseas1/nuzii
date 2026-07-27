@@ -1,4 +1,5 @@
 "use client";
+
 import { Product } from "@/sanity.types";
 import { ShoppingBag } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -11,10 +12,11 @@ interface Props {
   product: Product;
   selectedVariant?: SelectedVariant;
   className?: string;
+  quantity?: number;
+  label?: string;
+  showIcon?: boolean;
   /** When true (default) and the product has variants but none was passed in,
-   * the button links to the product page instead of adding an ambiguous line.
-   * Set false when rendering inside a variant selector that already resolves a
-   * default selection (e.g. the product page itself). */
+   * the control links to the product page instead of adding an ambiguous line. */
   requireSelection?: boolean;
 }
 
@@ -22,11 +24,20 @@ const AddToBagButton = ({
   product,
   selectedVariant,
   className,
+  quantity = 1,
+  label,
+  showIcon = true,
   requireSelection = true,
 }: Props) => {
   const addItem = useCartStore((state) => state.addItem);
   const hasVariants = (product?.variants?.length ?? 0) > 0;
   const needsSelection = hasVariants && !selectedVariant;
+  const content = (
+    <>
+      {showIcon && <ShoppingBag className="h-4 w-4" />}
+      {label && <span>{label}</span>}
+    </>
+  );
 
   if (needsSelection && requireSelection) {
     return (
@@ -35,17 +46,15 @@ const AddToBagButton = ({
         aria-label="Select options"
         title="Select options"
         className={cn(
-          "flex items-center justify-center border border-darkColor/30 rounded-md text-darkColor/70 hover:text-white hover:bg-darkColor hoverEffect",
+          "flex items-center justify-center gap-2 border border-darkColor/30 text-darkColor/70 hover:bg-darkColor hover:text-white hoverEffect",
           className
         )}
       >
-        <ShoppingBag className="w-4 h-4" />
+        {content}
       </Link>
     );
   }
 
-  // Same helper BuyNowButton uses, so the two buttons on a card can never
-  // disagree about whether an item is buyable.
   const isOutOfStock =
     needsSelection || isProductOutOfStock(product, selectedVariant);
 
@@ -53,20 +62,22 @@ const AddToBagButton = ({
     <button
       type="button"
       disabled={isOutOfStock}
-      onClick={(e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        addItem(product, selectedVariant);
-        toast.success(`${product?.name ?? "Product"} added to cart`);
+      onClick={(event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        addItem(product, selectedVariant, quantity);
+        toast.success(
+          `${quantity} × ${product?.name ?? "Product"} added to cart`
+        );
       }}
-      aria-label="Add to cart"
-      title="Add to cart"
+      aria-label={label ?? "Add to cart"}
+      title={label ?? "Add to cart"}
       className={cn(
-        "flex items-center justify-center border border-darkColor/30 rounded-md text-darkColor/70 hover:text-white hover:bg-darkColor hoverEffect disabled:opacity-40 disabled:cursor-not-allowed",
+        "flex items-center justify-center gap-2 border border-darkColor/30 text-darkColor/70 hover:bg-darkColor hover:text-white hoverEffect disabled:cursor-not-allowed disabled:opacity-40",
         className
       )}
     >
-      <ShoppingBag className="w-4 h-4" />
+      {content}
     </button>
   );
 };

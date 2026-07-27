@@ -1,4 +1,5 @@
 "use client";
+
 import {
   internalGroqTypeReferenceTo,
   SanityImageCrop,
@@ -9,62 +10,77 @@ import Image from "next/image";
 import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 
-interface Props {
-  images?: Array<{
-    asset?: {
-      _ref: string;
-      _type: "reference";
-      _weak?: boolean;
-      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-    };
-    hotspot?: SanityImageHotspot;
-    crop?: SanityImageCrop;
-    _type: "image";
-    _key: string;
-  }>;
+interface ProductImage {
+  asset?: {
+    _ref: string;
+    _type: "reference";
+    _weak?: boolean;
+    [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+  };
+  hotspot?: SanityImageHotspot;
+  crop?: SanityImageCrop;
+  _type: "image";
+  _key: string;
 }
 
-const ImageView = ({ images = [] }: Props) => {
+interface Props {
+  images?: ProductImage[];
+  productName?: string;
+}
+
+const ImageView = ({ images = [], productName = "Product" }: Props) => {
   const [active, setActive] = useState(images[0]);
+
+  if (!active) return null;
+
   return (
-    <div className="w-full md:w-1/2 space-y-2 md:space-y-4">
+    <div className="w-full min-w-0 lg:w-[62%]">
       <AnimatePresence mode="wait">
         <motion.div
-          key={active?._key}
+          key={active._key}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.5 }}
-          className="w-full max-h-[550px] min-h-[450px] border border-darkColor/10 rounded-md group overflow-hidden"
+          transition={{ duration: 0.35 }}
+          className="group relative aspect-[4/5] w-full overflow-hidden bg-nuziiCream sm:aspect-square"
         >
           <Image
-            src={urlFor(active).url()}
-            alt="productImage"
-            width={700}
-            height={700}
+            src={urlFor(active).width(1500).height(1500).fit("crop").url()}
+            alt={productName}
+            fill
             priority
-            className="w-full h-96 max-h-[550px] min-h-[500px] object-contain group-hover:scale-110 hoverEffect rounded-md"
+            sizes="(min-width: 1024px) 62vw, 100vw"
+            className="object-cover transition-transform duration-700 ease-out motion-reduce:transition-none lg:group-hover:scale-[1.03]"
           />
         </motion.div>
       </AnimatePresence>
-      <div className="grid grid-cols-6 gap-2 h-20 md:h-28">
-        {images.map((image) => (
-          <button
-            key={image._key}
-            onClick={() => setActive(image)}
-            className={`border rounded-md overflow-hidden hover:cursor-pointer ${active._key === image._key ? "ring-1 ring-darkColor" : ""
+
+      {images.length > 1 && (
+        <div className="mt-3 flex gap-2 overflow-x-auto pb-1 md:mt-4">
+          {images.map((image, index) => (
+            <button
+              key={image._key}
+              type="button"
+              onClick={() => setActive(image)}
+              aria-label={`Show product image ${index + 1}`}
+              aria-current={active._key === image._key ? "true" : undefined}
+              className={`relative aspect-square w-20 shrink-0 overflow-hidden border transition-colors md:w-24 ${
+                active._key === image._key
+                  ? "border-nuziiRoseGoldDark"
+                  : "border-transparent hover:border-nuziiRoseGold"
               }`}
-          >
-            <Image
-              src={urlFor(image).url()}
-              alt={`Thumbnail ${image._key}`}
-              width={100}
-              height={100}
-              className="w-full h-auto object-contain"
-            />
-          </button>
-        ))}
-      </div>
+            >
+              <Image
+                src={urlFor(image).width(240).height(240).fit("crop").url()}
+                alt=""
+                fill
+                sizes="96px"
+                className="object-cover"
+              />
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
