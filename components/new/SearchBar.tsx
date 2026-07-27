@@ -10,7 +10,7 @@ import {
 } from "../ui/dialog";
 import { client } from "@/sanity/lib/client";
 import { Input } from "../ui/input";
-import AddToCartButton from "../AddToCartButton";
+import BuyNowButton from "../BuyNowButton";
 import { urlFor } from "@/sanity/lib/image";
 import { Product } from "@/sanity.types";
 import PriceView from "../PriceView";
@@ -133,7 +133,12 @@ const SearchBar = () => {
                       </div>
 
                       <div className="w-60 mt-1">
-                        <AddToCartButton product={product} />
+                        <BuyNowButton
+                          product={product}
+                          // Close the dialog first, or it stays mounted (and
+                          // keeps body scroll locked) across the navigation.
+                          onBeforeNavigate={() => setShowSearch(false)}
+                        />
                       </div>
                     </div>
                   </div>

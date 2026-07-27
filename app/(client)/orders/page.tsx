@@ -90,7 +90,6 @@ const OrdersPage = () => {
                       <TableHead className="hidden sm:table-cell">
                         Shipping Method
                       </TableHead>
-                      <TableHead>Action</TableHead>
                     </TableRow>
                   </TableHeader>
                   <OrdersComponent orders={paginatedOrders} />

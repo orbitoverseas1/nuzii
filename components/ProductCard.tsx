@@ -4,7 +4,7 @@ import Image from "next/image";
 import React from "react";
 import PriceView from "./PriceView";
 import Link from "next/link";
-import AddToCartButton from "./AddToCartButton";
+import BuyNowButton from "./BuyNowButton";
 import AddToBagButton from "./AddToBagButton";
 import WishlistButton from "./WishlistButton";
 import Title from "./Title";
@@ -39,7 +39,7 @@ const ProductCard = ({ product }: { product: Product }) => {
           className="text-lg"
         />
         <div className="flex items-center gap-2">
-          <AddToCartButton product={product} />
+          <BuyNowButton product={product} />
           <AddToBagButton product={product} className="w-12 h-12 shrink-0" />
           <WishlistButton product={product} className="w-12 h-12 shrink-0 flex items-center justify-center border border-darkColor/30 rounded-md" />
         </div>
