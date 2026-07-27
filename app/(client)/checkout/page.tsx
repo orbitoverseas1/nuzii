@@ -12,19 +12,48 @@ import { getDiscountedPrice } from "@/lib/productPricing";
 import useCartStore, { getCartLineKey } from "@/store";
 import { useAuth } from "@/context/AuthContext";
 import { shippingMethods } from "@/constants";
-import { createOrder } from "@/actions/createOrder";
-import { Loader2, ShoppingBag } from "lucide-react";
+import { createOrder, type PaymentMethod } from "@/actions/createOrder";
+import IpayRedirectForm from "@/components/checkout/IpayRedirectForm";
+import { CreditCard, Loader2, ShoppingBag, Truck } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import toast from "react-hot-toast";
+
+const paymentOptions: Array<{
+  id: PaymentMethod;
+  title: string;
+  description: string;
+  icon: typeof CreditCard;
+}> = [
+  {
+    id: "ipay",
+    title: "Pay now with iPay",
+    description: "Card, LankaQR, or the iPay app — secure checkout",
+    icon: CreditCard,
+  },
+  {
+    id: "cod",
+    title: "Cash on Delivery",
+    description: "Pay in cash when your order arrives",
+    icon: Truck,
+  },
+];
 
 const CheckoutPage = () => {
   const router = useRouter();
   const { user } = useAuth();
-  const { getSubTotalPrice, resetCart } = useCartStore();
+  const { resetCart } = useCartStore();
   const groupedItems = useCartStore((state) => state.getGroupedItems());
   const [isClient, setIsClient] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("ipay");
+  const [ipayForm, setIpayForm] = useState<{
+    actionUrl: string;
+    fields: Record<string, string>;
+  } | null>(null);
+  // `loading` only updates on the next render, which leaves a window where a
+  // fast double-tap submits twice. This ref closes it synchronously.
+  const submittingRef = useRef(false);
 
   const [customerName, setCustomerName] = useState("");
   const [email, setEmail] = useState("");
@@ -49,7 +78,9 @@ const CheckoutPage = () => {
   }, [user]);
 
   useEffect(() => {
-    if (isClient && groupedItems.length === 0) {
+    // Don't bounce to /cart while an order is in flight — a Cash on Delivery
+    // order empties the cart moments before it navigates to /success.
+    if (isClient && groupedItems.length === 0 && !submittingRef.current) {
       router.replace("/cart");
     }
   }, [isClient, groupedItems.length, router]);
@@ -78,15 +109,34 @@ const CheckoutPage = () => {
 
   const total = discountedTotal + selectedShippingMethod.cost;
 
+  // Once the iPay form is mounted we are on our way out to the gateway; the
+  // cart is deliberately still full in case the customer cancels.
+  if (ipayForm) {
+    return <IpayRedirectForm {...ipayForm} />;
+  }
+
   if (!isClient || groupedItems.length === 0) {
     return null;
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (submittingRef.current) return;
+    submittingRef.current = true;
     setLoading(true);
+
     try {
-      const { orderNumber } = await createOrder(groupedItems, {
+      const result = await createOrder({
+        // Only *what* is being bought. Prices come from Sanity server-side —
+        // the cart lives in localStorage and can say anything.
+        lines: groupedItems.map(({ product, quantity, selectedVariant }) => ({
+          productId: product._id,
+          variantKey: selectedVariant?._key,
+          quantity,
+        })),
+        shippingMethodId: selectedShippingMethod.id,
+        paymentMethod,
+        expectedTotal: total,
         customerName,
         email,
         phone,
@@ -98,17 +148,34 @@ const CheckoutPage = () => {
           postalCode: postalCode || undefined,
           country: "Sri Lanka",
         },
-        shippingMethod: {
-          title: selectedShippingMethod.title,
-          cost: selectedShippingMethod.cost,
-        },
       });
-      resetCart();
-      router.push(`/success?orderNumber=${orderNumber}`);
+
+      if (result.kind === "ipay") {
+        // Stay in the loading state: this render is replaced by the redirect
+        // form, and re-enabling the button would invite a second order.
+        setIpayForm({ actionUrl: result.actionUrl, fields: result.fields });
+        return;
+      }
+
+      if (result.kind === "cod") {
+        resetCart();
+        router.push(
+          `/success?orderNumber=${encodeURIComponent(result.orderNumber)}&t=${encodeURIComponent(result.lookupToken)}`
+        );
+        return;
+      }
+
+      toast.error(result.message);
+      if (result.code === "OUT_OF_STOCK" || result.code === "PRICE_CHANGED") {
+        router.push("/cart");
+        return;
+      }
+      submittingRef.current = false;
+      setLoading(false);
     } catch (error) {
       console.error("Error placing order:", error);
       toast.error("Failed to place order. Please try again.");
-    } finally {
+      submittingRef.current = false;
       setLoading(false);
     }
   };
@@ -247,6 +314,42 @@ const CheckoutPage = () => {
                 ))}
               </div>
             </div>
+
+            <div className="bg-white rounded-lg border p-6 space-y-4">
+              <h2 className="text-lg font-semibold">Payment Method</h2>
+              <div className="space-y-3">
+                {paymentOptions.map((option) => {
+                  const Icon = option.icon;
+                  return (
+                    <label
+                      key={option.id}
+                      className={cn(
+                        "flex items-center gap-3 border rounded-md p-3 cursor-pointer hoverEffect",
+                        paymentMethod === option.id
+                          ? "border-darkColor bg-darkColor/5"
+                          : "border-gray-200"
+                      )}
+                    >
+                      <input
+                        type="radio"
+                        name="paymentMethod"
+                        value={option.id}
+                        checked={paymentMethod === option.id}
+                        onChange={() => setPaymentMethod(option.id)}
+                        className="accent-darkColor"
+                      />
+                      <Icon className="w-5 h-5 text-darkColor/70 shrink-0" />
+                      <div>
+                        <p className="font-medium text-sm">{option.title}</p>
+                        <p className="text-xs text-gray-500">
+                          {option.description}
+                        </p>
+                      </div>
+                    </label>
+                  );
+                })}
+              </div>
+            </div>
           </div>
 
           <div className="lg:col-span-1 bg-white rounded-lg border p-6 space-y-4">
@@ -303,13 +406,16 @@ const CheckoutPage = () => {
             >
               {loading ? (
                 <Loader2 className="w-5 h-5 animate-spin" />
+              ) : paymentMethod === "ipay" ? (
+                "Pay Now"
               ) : (
                 "Place Order"
               )}
             </Button>
             <p className="text-xs text-gray-500 text-center">
-              Payment is collected on delivery for now &mdash; you&apos;ll be
-              contacted to confirm your order.
+              {paymentMethod === "ipay"
+                ? "You'll be redirected to iPay to pay securely by card, LankaQR, or the iPay app."
+                : "Pay in cash when your order is delivered — we'll contact you to confirm."}
             </p>
           </div>
         </form>

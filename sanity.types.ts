@@ -164,7 +164,16 @@ export type Order = {
     title?: string;
     cost?: number;
   };
+  paymentMethod?: "ipay" | "cod";
+  paymentStatus?: "not_required" | "awaiting_payment" | "paid" | "pending_settlement" | "failed" | "cancelled";
   paymentGatewayReference?: string;
+  paymentTransactionMessage?: string;
+  paymentTransactionAmount?: number;
+  paymentCreditedAmount?: number;
+  paymentCompletedAt?: string;
+  paymentRawCallback?: string;
+  paymentNotes?: string;
+  stockRestored?: boolean;
   products?: Array<{
     product?: {
       _ref: string;
@@ -176,8 +185,13 @@ export type Order = {
     variantColor?: string;
     variantSize?: string;
     variantSku?: string;
+    variantKey?: string;
+    productName?: string;
+    unitPrice?: number;
+    lineTotal?: number;
     _key: string;
   }>;
+  subtotal?: number;
   totalPrice?: number;
   currency?: string;
   amountDiscount?: number;
@@ -273,7 +287,9 @@ export type Product = {
     [internalGroqTypeReferenceTo]?: "category";
   }>;
   stock?: number;
-  variants?: Array<ProductVariant & { _key: string }>;
+  variants?: Array<{
+    _key: string;
+  } & ProductVariant>;
   status?: "new" | "hot" | "sale";
   variant?: "shawls" | "bags" | "jewellery" | "hijab-accessories";
   isBestSelling?: boolean;
@@ -455,112 +471,8 @@ export type SanityAssetSourceData = {
   url?: string;
 };
 
-export type AllSanitySchemaTypes = HomepageProductSections | HomepageLooks | ProductShowcase | ShopBanner | ShopHero | Order | Product | ProductVariant | Category | BlockContent | SanityImagePaletteSwatch | SanityImagePalette | SanityImageDimensions | SanityImageHotspot | SanityImageCrop | SanityFileAsset | SanityImageAsset | SanityImageMetadata | Geopoint | Slug | SanityAssetSourceData;
+export type AllSanitySchemaTypes = HomepageProductSections | HomepageLooks | ProductShowcase | ShopBanner | ShopHero | Order | ProductVariant | Product | Category | BlockContent | SanityImagePaletteSwatch | SanityImagePalette | SanityImageDimensions | SanityImageHotspot | SanityImageCrop | SanityFileAsset | SanityImageAsset | SanityImageMetadata | Geopoint | Slug | SanityAssetSourceData;
 export declare const internalGroqTypeReferenceTo: unique symbol;
-// Source: ./app/(client)/success/page.tsx
-// Variable: query
-// Query: *[_type == 'order' && clerkUserId == $userId] | order(orderData desc){  ...,products[]{    ...,product->  }}
-export type QueryResult = Array<{
-  _id: string;
-  _type: "order";
-  _createdAt: string;
-  _updatedAt: string;
-  _rev: string;
-  orderNumber?: string;
-  invoice?: {
-    id?: string;
-    number?: string;
-    hosted_invoice_url?: string;
-  };
-  stripeCheckoutSessionId?: string;
-  stripeCustomerId?: string;
-  clerkUserId?: string;
-  customerName?: string;
-  email?: string;
-  stripePaymentIntentId?: string;
-  products: Array<{
-    product: {
-      _id: string;
-      _type: "product";
-      _createdAt: string;
-      _updatedAt: string;
-      _rev: string;
-      name?: string;
-      brand?: string;
-      collection?: string;
-      slug?: Slug;
-      images?: Array<{
-        asset?: {
-          _ref: string;
-          _type: "reference";
-          _weak?: boolean;
-          [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-        };
-        media?: unknown;
-        hotspot?: SanityImageHotspot;
-        crop?: SanityImageCrop;
-        _type: "image";
-        _key: string;
-      }>;
-      variantInfo?: string;
-      description?: Array<{
-        children?: Array<{
-          marks?: Array<string>;
-          text?: string;
-          _type: "span";
-          _key: string;
-        }>;
-        style?: "blockquote" | "h1" | "h2" | "h3" | "h4" | "normal";
-        listItem?: "bullet";
-        markDefs?: Array<{
-          href?: string;
-          _type: "link";
-          _key: string;
-        }>;
-        level?: number;
-        _type: "block";
-        _key: string;
-      } | {
-        asset?: {
-          _ref: string;
-          _type: "reference";
-          _weak?: boolean;
-          [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-        };
-        media?: unknown;
-        hotspot?: SanityImageHotspot;
-        crop?: SanityImageCrop;
-        alt?: string;
-        _type: "image";
-        _key: string;
-      }>;
-      price?: number;
-      discount?: number;
-      categories?: Array<{
-        _ref: string;
-        _type: "reference";
-        _weak?: boolean;
-        _key: string;
-        [internalGroqTypeReferenceTo]?: "category";
-      }>;
-      stock?: number;
-      status?: "hot" | "new" | "sale";
-      variant?: "bags" | "hijab-accessories" | "jewellery" | "shawls";
-      isBestSelling?: boolean;
-      isTopRated?: boolean;
-      rating?: number;
-      salesCount?: number;
-    } | null;
-    quantity?: number;
-    _key: string;
-  }> | null;
-  totalPrice?: number;
-  currency?: string;
-  amountDiscount?: number;
-  status?: "cancelled" | "delivered" | "paid" | "pending" | "shipped";
-  orderDate?: string;
-}>;
-
 // Source: ./sanity/helpers/index.ts
 // Variable: PRODUCTS_QUERY
 // Query: *[_type=="product"] | order(name asc)
@@ -629,6 +541,9 @@ export type PRODUCTS_QUERYResult = Array<{
     [internalGroqTypeReferenceTo]?: "category";
   }>;
   stock?: number;
+  variants?: Array<{
+    _key: string;
+  } & ProductVariant>;
   status?: "hot" | "new" | "sale";
   variant?: "bags" | "hijab-accessories" | "jewellery" | "shawls";
   isBestSelling?: boolean;
@@ -703,6 +618,9 @@ export type PRODUCT_SEARCH_QUERYResult = Array<{
     [internalGroqTypeReferenceTo]?: "category";
   }>;
   stock?: number;
+  variants?: Array<{
+    _key: string;
+  } & ProductVariant>;
   status?: "hot" | "new" | "sale";
   variant?: "bags" | "hijab-accessories" | "jewellery" | "shawls";
   isBestSelling?: boolean;
@@ -777,7 +695,9 @@ export type PRODUCT_BY_ID_QUERYResult = {
     [internalGroqTypeReferenceTo]?: "category";
   }>;
   stock?: number;
-  variants?: Array<ProductVariant & { _key: string }>;
+  variants?: Array<{
+    _key: string;
+  } & ProductVariant>;
   status?: "hot" | "new" | "sale";
   variant?: "bags" | "hijab-accessories" | "jewellery" | "shawls";
   isBestSelling?: boolean;
@@ -852,6 +772,9 @@ export type PRODUCT_BY_CATEGORY_QUERYResult = Array<{
     [internalGroqTypeReferenceTo]?: "category";
   }>;
   stock?: number;
+  variants?: Array<{
+    _key: string;
+  } & ProductVariant>;
   status?: "hot" | "new" | "sale";
   variant?: "bags" | "hijab-accessories" | "jewellery" | "shawls";
   isBestSelling?: boolean;
@@ -1053,7 +976,10 @@ export type NEW_ARRIVALS_QUERYResult = Array<{
     [internalGroqTypeReferenceTo]?: "category";
   }>;
   stock?: number;
-  status?: "hot" | "new" | "sale";
+  variants?: Array<{
+    _key: string;
+  } & ProductVariant>;
+  status: "new";
   variant?: "bags" | "hijab-accessories" | "jewellery" | "shawls";
   isBestSelling?: boolean;
   isTopRated?: boolean;
@@ -1127,9 +1053,12 @@ export type BEST_SELLING_QUERYResult = Array<{
     [internalGroqTypeReferenceTo]?: "category";
   }>;
   stock?: number;
+  variants?: Array<{
+    _key: string;
+  } & ProductVariant>;
   status?: "hot" | "new" | "sale";
   variant?: "bags" | "hijab-accessories" | "jewellery" | "shawls";
-  isBestSelling?: boolean;
+  isBestSelling: true;
   isTopRated?: boolean;
   rating?: number;
   salesCount?: number;
@@ -1201,6 +1130,9 @@ export type HOMEPAGE_MOST_LOVED_QUERYResult = Array<{
     [internalGroqTypeReferenceTo]?: "category";
   }>;
   stock?: number;
+  variants?: Array<{
+    _key: string;
+  } & ProductVariant>;
   status?: "hot" | "new" | "sale";
   variant?: "bags" | "hijab-accessories" | "jewellery" | "shawls";
   isBestSelling?: boolean;
@@ -1275,6 +1207,9 @@ export type HOMEPAGE_FRESH_DROPS_QUERYResult = Array<{
     [internalGroqTypeReferenceTo]?: "category";
   }>;
   stock?: number;
+  variants?: Array<{
+    _key: string;
+  } & ProductVariant>;
   status?: "hot" | "new" | "sale";
   variant?: "bags" | "hijab-accessories" | "jewellery" | "shawls";
   isBestSelling?: boolean;
@@ -1329,7 +1264,7 @@ export type FEATURED_CATEGORIES_QUERYResult = Array<{
 // Variable: HOMEPAGE_LOOKS_QUERY
 // Query: *[_type == "homepageLooks" && _id == "homepageLooks"][0] {    _id,    isActive,    heading,    description,    cards[] {      _key,      title,      image,      alt,      link    }  }
 export type HOMEPAGE_LOOKS_QUERYResult = {
-  _id: string;
+  _id: "homepageLooks";
   isActive: boolean | null;
   heading: string | null;
   description: string | null;
@@ -1388,7 +1323,6 @@ export type ALL_PRODUCTS_QUERYResult = Array<{
 import "@sanity/client";
 declare module "@sanity/client" {
   interface SanityQueries {
-    "*[_type == 'order' && clerkUserId == $userId] | order(orderData desc){\n  ...,products[]{\n    ...,product->\n  }\n}": QueryResult;
     "*[_type==\"product\"] | order(name asc)": PRODUCTS_QUERYResult;
     "*[_type == \"product\" && name match $searchParam] | order(name asc)": PRODUCT_SEARCH_QUERYResult;
     "*[_type == \"product\" && slug.current == $slug] | order(name asc) [0]": PRODUCT_BY_ID_QUERYResult;

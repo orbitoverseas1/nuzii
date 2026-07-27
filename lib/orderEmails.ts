@@ -8,6 +8,15 @@ export interface OrderEmailLine {
   lineTotal: number;
 }
 
+/**
+ * Which story the email tells:
+ * - `cod`                — order taken, payment happens at the door
+ * - `paid`               — money received and settled to us
+ * - `pending_settlement` — customer was debited, the bank has not settled to us
+ *   yet (iPay status P). Worded so it never promises more than we know.
+ */
+export type OrderEmailVariant = "cod" | "paid" | "pending_settlement";
+
 export interface OrderEmailData {
   orderNumber: string;
   customerName: string;
@@ -27,6 +36,9 @@ export interface OrderEmailData {
   shippingCost: number;
   totalPrice: number;
   currency: string;
+  variant: OrderEmailVariant;
+  /** Signed link back to the order status page. */
+  orderUrl?: string;
 }
 
 const money = (amount: number, currency: string) =>
@@ -116,6 +128,23 @@ const shell = (heading: string, intro: string, body: string) => `
     <p style="color:#999;font-size:12px;margin-top:28px;">This is an automated message from the NUZII store.</p>
   </div>`;
 
+const paymentLabel = (variant: OrderEmailVariant) =>
+  variant === "cod" ? "Cash on Delivery" : "iPay (card / LankaQR)";
+
+const paymentRow = (data: OrderEmailData) => `
+    <p style="margin:12px 0 0;font-size:13px;color:#666;">
+      Payment: <strong style="color:#111;">${escapeHtml(
+        paymentLabel(data.variant)
+      )}</strong>
+    </p>`;
+
+const orderLinkBlock = (data: OrderEmailData) =>
+  data.orderUrl
+    ? `<p style="margin:0 0 20px;font-size:14px;">
+        <a href="${escapeHtml(data.orderUrl)}" style="color:#111;font-weight:600;">View your order &rarr;</a>
+      </p>`
+    : "";
+
 const orderTableBlock = (data: OrderEmailData) => `
   <div style="background:#fafafa;border:1px solid #eee;border-radius:10px;padding:16px 18px;margin-bottom:20px;">
     <p style="margin:0 0 12px;font-size:13px;color:#666;">
@@ -127,25 +156,59 @@ const orderTableBlock = (data: OrderEmailData) => `
       ${lineRows(data)}
       ${totalsRows(data)}
     </table>
+    ${paymentRow(data)}
   </div>
   <div style="font-size:14px;color:#333;line-height:1.5;">
     <p style="margin:0 0 4px;font-weight:600;">Shipping to</p>
     <p style="margin:0 0 16px;color:#555;">${addressBlock(data)}</p>
   </div>`;
 
+const customerHeading = (variant: OrderEmailVariant) => {
+  switch (variant) {
+    case "paid":
+      return "Payment received";
+    case "pending_settlement":
+      return "We've got your order";
+    default:
+      return "Order Placed!";
+  }
+};
+
+const customerIntro = (data: OrderEmailData) => {
+  const name = escapeHtml(data.customerName);
+  switch (data.variant) {
+    case "paid":
+      return `Hi ${name}, thanks for your order — we've received your payment and we're getting it ready to ship.`;
+    case "pending_settlement":
+      return `Hi ${name}, thanks for your order. Your payment has gone through and we're just waiting on final confirmation from your bank. We'll be in touch if anything needs your attention.`;
+    default:
+      return `Hi ${name}, thanks for your order. We'll contact you shortly to confirm the details and arrange payment on delivery.`;
+  }
+};
+
 const customerHtml = (data: OrderEmailData) =>
   shell(
-    "Order Placed!",
-    `Hi ${escapeHtml(
-      data.customerName
-    )}, thanks for your order. We'll contact you shortly to confirm the details and arrange payment on delivery.`,
-    orderTableBlock(data)
+    customerHeading(data.variant),
+    customerIntro(data),
+    `${orderTableBlock(data)}${orderLinkBlock(data)}`
   );
+
+const adminIntro = (data: OrderEmailData) => {
+  const name = escapeHtml(data.customerName);
+  switch (data.variant) {
+    case "paid":
+      return `${name} paid for a new order through iPay. Open Sanity Studio to review and fulfil it.`;
+    case "pending_settlement":
+      return `${name} placed an order through iPay and was debited, but the funds have not settled to the merchant account yet (status P). Reconcile it against the iPay merchant portal before shipping.`;
+    default:
+      return `A new order was placed by ${name}. Open Sanity Studio to review and fulfil it.`;
+  }
+};
 
 const adminHtml = (data: OrderEmailData) =>
   shell(
-    "New order received",
-    `A new order was placed by ${escapeHtml(data.customerName)}. Open Sanity Studio to review and fulfil it.`,
+    data.variant === "cod" ? "New order received" : "New paid order",
+    adminIntro(data),
     `
     ${orderTableBlock(data)}
     <div style="font-size:14px;color:#333;line-height:1.6;">
@@ -168,7 +231,10 @@ export const sendCustomerOrderEmail = async (data: OrderEmailData) => {
   await resend.emails.send({
     from,
     to: data.email,
-    subject: `Your NUZII order ${data.orderNumber}`,
+    subject:
+      data.variant === "paid"
+        ? `Your NUZII order ${data.orderNumber} — payment received`
+        : `Your NUZII order ${data.orderNumber}`,
     html: customerHtml(data),
   });
 };
@@ -184,7 +250,10 @@ export const sendAdminOrderEmail = async (data: OrderEmailData) => {
   await resend.emails.send({
     from,
     to,
-    subject: `New order ${data.orderNumber} — ${data.customerName}`,
+    subject:
+      data.variant === "cod"
+        ? `New order ${data.orderNumber} — ${data.customerName}`
+        : `New paid order ${data.orderNumber} — ${data.customerName}`,
     html: adminHtml(data),
   });
 };

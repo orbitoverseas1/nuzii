@@ -2,7 +2,7 @@
 
 import { Product, ProductVariant } from "@/sanity.types";
 import { useState } from "react";
-import AddToCartButton from "@/components/AddToCartButton";
+import BuyNowButton from "@/components/BuyNowButton";
 import AddToBagButton from "@/components/AddToBagButton";
 import WishlistButton from "@/components/WishlistButton";
 import PriceView from "@/components/PriceView";
@@ -30,9 +30,12 @@ const ProductPurchasePanel = ({ product }: { product: Product }) => {
         </>
       )}
       <div className="flex items-center gap-2.5 lg:gap-5">
-        <AddToCartButton
+        <BuyNowButton
           product={product}
           selectedVariant={selectedVariant ?? undefined}
+          // ProductVariantSelector resolves a default selection on mount, so
+          // there is no ambiguous state to guard against here.
+          requireSelection={false}
           className="bg-darkColor/80 text-white hover:bg-darkColor hoverEffect"
         />
         <AddToBagButton
