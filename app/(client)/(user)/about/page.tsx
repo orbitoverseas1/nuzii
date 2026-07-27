@@ -241,7 +241,7 @@ const AboutPage = () => {
             Get early access to new drops and exclusive offers.
           </p>
           <Link
-            href="/shop"
+            href="/category/all"
             className="inline-block px-10 py-3 bg-nuziiRoseGold hover:bg-nuziiRoseGoldDark text-white rounded-md text-lg font-medium shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
           >
             Browse Our Collection

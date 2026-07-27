@@ -12,7 +12,7 @@ export default function FooterCTA() {
                     Elevate your everyday with us.
                 </p>
                 <Link
-                    href="/shop"
+                    href="/category/all"
                     className="inline-block px-10 py-4 bg-nuziiText text-white rounded-full text-lg font-medium shadow-lg hover:bg-nuziiRoseGoldDark hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
                 >
                     Shop the Collection

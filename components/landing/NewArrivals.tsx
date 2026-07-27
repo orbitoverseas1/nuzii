@@ -24,7 +24,7 @@ export default function NewArrivals({ products }: { products: Product[] }) {
 
                 <div className="text-center">
                     <Link
-                        href="/shop?section=fresh-drops#featured-products"
+                        href="/category/all"
                         className="inline-flex items-center gap-2 px-8 py-3 border border-nuziiText text-nuziiText rounded-full hover:bg-nuziiText hover:text-white transition-all duration-300"
                     >
                         <span>Explore New Arrivals</span>

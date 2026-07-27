@@ -21,7 +21,7 @@ const HeaderMenu = ({ categories }: { categories: FEATURED_CATEGORIES_QUERYResul
 
       <div className="relative group">
         <button
-          className={`flex items-center gap-1 hover:text-nuziiRoseGoldDark transition-colors duration-300 ${pathname.startsWith("/shop") || pathname.startsWith("/category")
+          className={`flex items-center gap-1 hover:text-nuziiRoseGoldDark transition-colors duration-300 ${pathname.startsWith("/category")
             ? "text-nuziiRoseGoldDark"
             : ""
             }`}

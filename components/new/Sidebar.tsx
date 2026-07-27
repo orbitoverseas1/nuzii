@@ -80,7 +80,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, categories }) => {
                 <div className="flex flex-col">
                   <button
                     onClick={() => setIsShopOpen(!isShopOpen)}
-                    className={`px-4 py-3 rounded-xl text-lg font-medium transition-all duration-300 flex items-center justify-between w-full ${pathname.startsWith("/shop") || pathname.startsWith("/category")
+                    className={`px-4 py-3 rounded-xl text-lg font-medium transition-all duration-300 flex items-center justify-between w-full ${pathname.startsWith("/category")
                       ? "text-nuziiRoseGoldDark"
                       : "text-nuziiText hover:bg-nuziiCream hover:text-nuziiRoseGoldDark"
                       }`}

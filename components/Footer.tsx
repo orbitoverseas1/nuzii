@@ -24,7 +24,7 @@ const Footer = async () => {
               <span className="font-medium text-nuziiRoseGoldDark">Quality you can trust. Prices you can love.</span>
             </p>
             <Link
-              href="/shop"
+              href="/category/all"
               className="inline-flex items-center gap-2 bg-nuziiRoseGold hover:bg-nuziiRoseGoldDark text-white px-6 py-3 rounded-lg font-medium transition-all duration-300 hover:shadow-lg group"
             >
               Discover Your Style
