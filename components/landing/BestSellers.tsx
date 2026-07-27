@@ -18,7 +18,7 @@ export default function BestSellers({ products }: { products: Product[] }) {
                         </p>
                     </div>
                     <Link
-                        href="/shop?section=most-loved#featured-products"
+                        href="/category/all"
                         className="text-nuziiRoseGoldDark hover:text-nuziiText font-medium border-b border-nuziiRoseGoldDark hover:border-nuziiText transition-colors pb-1"
                     >
                         Shop Best Sellers

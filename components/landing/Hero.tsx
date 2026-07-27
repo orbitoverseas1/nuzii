@@ -99,13 +99,13 @@ export default function Hero() {
                     {/* CTA Buttons */}
                     <div className="pt-8 flex flex-col sm:flex-row gap-4">
                         <Link
-                            href="/shop"
+                            href="/category/all"
                             className="inline-flex items-center justify-center gap-2 bg-nuziiRoseGold hover:bg-nuziiRoseGoldDark text-white px-8 py-3 rounded-lg font-medium transition-all duration-300 hover:shadow-lg group min-w-[160px]"
                         >
                             Shop Now
                         </Link>
                         <Link
-                            href="/shop"
+                            href="/category/all"
                             className="inline-flex items-center justify-center gap-2 bg-white hover:bg-gray-100 text-nuziiRoseGoldDark px-8 py-3 rounded-lg font-medium transition-all duration-300 hover:shadow-lg group min-w-[160px]"
                         >
                             View Collection
