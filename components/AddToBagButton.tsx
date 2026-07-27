@@ -3,6 +3,7 @@ import { Product } from "@/sanity.types";
 import { ShoppingBag } from "lucide-react";
 import { cn } from "@/lib/utils";
 import useCartStore, { SelectedVariant } from "@/store";
+import { isProductOutOfStock } from "@/lib/productStock";
 import toast from "react-hot-toast";
 import Link from "next/link";
 
@@ -43,11 +44,10 @@ const AddToBagButton = ({
     );
   }
 
-  const isOutOfStock = needsSelection
-    ? true
-    : selectedVariant
-      ? (selectedVariant.stock ?? 0) <= 0
-      : product?.stock === 0;
+  // Same helper BuyNowButton uses, so the two buttons on a card can never
+  // disagree about whether an item is buyable.
+  const isOutOfStock =
+    needsSelection || isProductOutOfStock(product, selectedVariant);
 
   return (
     <button
