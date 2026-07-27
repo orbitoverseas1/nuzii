@@ -1,5 +1,5 @@
 "use client";
-import React, { useCallback, useState } from "react";
+import React, { useState } from "react";
 import { TableBody, TableCell, TableRow } from "./ui/table";
 import PriceFormatter from "./PriceFormatter";
 import OrderDetailsDialog from "./OrderDetailsDialog";
@@ -10,13 +10,9 @@ import {
   TooltipTrigger,
 } from "./ui/tooltip";
 import { format } from "date-fns";
-import { Trash } from "lucide-react";
-import { useRouter } from "next/navigation";
-import toast from "react-hot-toast";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const OrdersComponent = ({ orders }: { orders: any[] }) => {
-  const [isDeleting, setIsDeleting] = useState<string | null>(null);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
 
@@ -24,59 +20,10 @@ const OrdersComponent = ({ orders }: { orders: any[] }) => {
   const handleOrderClick = (order: any) => {
     setSelectedOrder(order);
   };
-  const router = useRouter();
-
-  const refreshOrders = useCallback(() => {
-    // This will trigger a refresh of the page data
-    router.refresh();
-  }, [router]);
-  const handleDeleteOrder = async (
-    orderId: string,
-    event: React.MouseEvent
-  ) => {
-    event.stopPropagation(); // Prevent expanding the order when clicking delete
-
-    if (
-      !confirm(
-        "Are you sure you want to delete this order? This action cannot be undone."
-      )
-    ) {
-      return;
-    }
-
-    setIsDeleting(orderId);
-
-    try {
-      const response = await fetch("/api/delete-order", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ orderId }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to delete order");
-      }
-
-      // Update the local state to remove the deleted order
-
-      toast.success("Order deleted successfully");
-
-      // Refresh the page data to get the updated orders list
-      refreshOrders();
-    } catch (error) {
-      console.error("Error deleting order:", error);
-      toast.error(
-        error instanceof Error
-          ? error.message
-          : "Failed to delete order. Please try again."
-      );
-    } finally {
-      setIsDeleting(null);
-    }
-  };
+  // Order deletion was removed along with the /api/delete-order route: it
+  // accepted any document id from anyone, and orders now carry payment records
+  // that must not be destroyable from the storefront. Cancel orders in Sanity
+  // Studio instead.
 
   return (
     <>
@@ -124,21 +71,6 @@ const OrdersComponent = ({ orders }: { orders: any[] }) => {
                     <p className="font-medium line-clamp-1">
                       {order?.shippingMethod?.title ?? "----"}
                     </p>
-                  </TableCell>
-                  <TableCell>
-                    {/* Delete button */}
-                    <button
-                      onClick={(e) => handleDeleteOrder(order._id, e)}
-                      className="ml-2 text-red-500 hover:text-red-700 cursor-pointer transition-colors"
-                      disabled={isDeleting === order._id}
-                      aria-label="Delete order"
-                    >
-                      {isDeleting === order._id ? (
-                        <div className="w-5 h-5 border-2 border-red-500 border-t-transparent rounded-full animate-spin"></div>
-                      ) : (
-                        <Trash size={18} />
-                      )}
-                    </button>
                   </TableCell>
                 </TableRow>
               </TooltipTrigger>

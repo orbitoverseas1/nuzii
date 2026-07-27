@@ -3,11 +3,19 @@
 import { useState } from "react";
 import ProductCard from "@/components/ProductCard";
 import { motion, AnimatePresence } from "motion/react";
-import { Product, NEW_ARRIVALS_QUERYResult, BEST_SELLING_QUERYResult, TOP_RATED_QUERYResult } from "@/sanity.types";
+import { Product, TOP_RATED_QUERYResult } from "@/sanity.types";
+
+// The first two tabs take plain Product lists rather than the generated
+// NEW_ARRIVALS/BEST_SELLING result types: typegen narrows those to the literal
+// values each query filters on (status == "new", isBestSelling == true), which
+// is more specific than this component needs and rejects any other product
+// list a caller wants to show in these tabs. Top Rated keeps its query type
+// because that query projects a subset of fields.
+type FeaturedProduct = Product | TOP_RATED_QUERYResult[number];
 
 interface FeaturedProductsProps {
-    newArrivals: NEW_ARRIVALS_QUERYResult;
-    bestSelling: BEST_SELLING_QUERYResult;
+    newArrivals: Product[];
+    bestSelling: Product[];
     topRated: TOP_RATED_QUERYResult;
     initialTab?: TabType;
 }
@@ -22,10 +30,10 @@ export default function FeaturedProducts({
 }: FeaturedProductsProps) {
     const [activeTab, setActiveTab] = useState<TabType>(initialTab || "new");
 
-    const tabs = [
-        { id: "new" as TabType, label: "Fresh Drops", products: newArrivals },
-        { id: "best" as TabType, label: "Most Loved", products: bestSelling },
-        { id: "top" as TabType, label: "Top Rated", products: topRated },
+    const tabs: Array<{ id: TabType; label: string; products: FeaturedProduct[] }> = [
+        { id: "new", label: "Fresh Drops", products: newArrivals },
+        { id: "best", label: "Most Loved", products: bestSelling },
+        { id: "top", label: "Top Rated", products: topRated },
     ];
 
     const currentProducts = tabs.find((tab) => tab.id === activeTab)?.products || [];
