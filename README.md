@@ -1,166 +1,131 @@
-# NUZII Ecommerce Application
+﻿# NUZII
 
-This is a Next.js-based ecommerce application template integrated with Sanity for content management, Clerk for authentication, Stripe for payments, and Sendbird for chat functionality.
-Follow the steps below to set up and customize the application.
+<img src="public/images/nuzi-logo.png" alt="NUZII logo" width="240" />
 
-## 🔗 Preview
+NUZII is a fashion ecommerce storefront for modest-friendly, everyday womenswear. Built with Next.js and Sanity, it supports guest checkout, optional Google sign-in, iPay payments, and Cash on Delivery in Sri Lankan rupees (LKR).
 
-## ![Dashboard Preview](/public/preview_image.png)
+![NUZII homepage carousel artwork](public/images/landing/bg-carousel.png)
 
-## Getting started
+## Features
 
-To set up the NUZII Ecommerce Application, follow these steps carefully:
+- Homepage collections, most-loved products, and fresh drops managed in Sanity.
+- Product and category browsing, product variants, and stock tracking.
+- Cart and wishlist saved locally with Zustand.
+- Guest checkout with shipping options, server-calculated pricing, and stock reservation.
+- iPay hosted checkout and Cash on Delivery.
+- Optional Google sign-in through Firebase and order history for signed-in customers.
+- Signed order status links for guest customers.
+- Customer confirmations and admin order notifications through Resend.
+- Embedded Sanity Studio for managing products, homepage content, and orders.
 
-### 1. Install npm Dependencies
+## Tech stack
 
-First, install the required npm dependencies by running the following command in your terminal depend with package you are using:
+| Area | Technology |
+| --- | --- |
+| Application | Next.js 16 App Router, React 19, TypeScript |
+| Styling and UI | Tailwind CSS 4, Radix UI, Framer Motion, Embla Carousel |
+| Content and orders | Sanity, GROQ, next-sanity |
+| Customer authentication | Firebase Authentication (Google) |
+| Cart and wishlist | Zustand with local storage persistence |
+| Payments | iPay Sri Lanka, Cash on Delivery |
+| Transactional email | Resend |
 
-```bash
-npm install
-or
-yarn install
-or
-pnpm install
-```
+## Local setup
 
-This will download all the necessary packages listed in package.json.
+Use Node.js 22.12 or newer and npm. You will need a Sanity project and dataset, plus Firebase web app configuration for the customer authentication provider.
 
-## 2. Create a New Sanity Project
-
-Set up a Sanity project to manage your ecommerce content (e.g., products or blog posts):
-
-```bash
-npm create sanity@latest -- --env=.env.local --create-project "NUZII ecommerce" --dataset production
-```
-
-If you don’t have a Sanity account, this command will guide you to create one.
-When prompted with "Would you like to add configuration files for a Sanity project in this Next.js folder?", select "n" (no), as the --env=.env.local flag handles this automatically.
-After running this command, a .env.local file will be created (or updated) in your project root with:
-NEXT_PUBLIC_SANITY_PROJECT_ID: A unique ID for your Sanity project, generated during this step.
-NEXT_PUBLIC_SANITY_DATASET: Set to production.
-
-- Note: You can verify your NEXT_PUBLIC_SANITY_PROJECT_ID later by logging into https://www.sanity.io/manage, selecting the "NUZII ecommerce" project, and checking the project details.
-
-## 3. Set Up Environment Variables
-
-The application requires additional environment variables beyond those set in Step 2. Edit your .env file in the project root to include the following:
+### 1. Install dependencies
 
 ```bash
-
-NEXT_PUBLIC_BASE_URL=http://localhost:3000
-NEXT_PUBLIC_SANITY_PROJECT_ID=<already-set-by-step-2>
-NEXT_PUBLIC_SANITY_DATASET=production
-NEXT_PUBLIC_SANITY_API_VERSION=2024-11-09
-SANITY_API_TOKEN=<your-sanity-api-token>
-SANITY_API_READ_TOKEN=<your-sanity-api-read-token>
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=<your-clerk-publishable-key>
-CLERK_SECRET_KEY=<your-clerk-secret-key>
-STRIPE_SECRET_KEY=<your-stripe-secret-key>
-STRIPE_WEBHOOK_SECRET=<your-stripe-webhook-secret>
-SENDBIRD_APP_ID=<your-sendbird-app-id>
-
+npm ci
 ```
 
-### Where to Find These Credentials
+### 2. Configure the environment
 
-#### Sanity Variables:
+Copy [.env.example](.env.example) to `.env.local` and fill in your configuration. In PowerShell:
 
-SANITY_API_TOKEN and SANITY_API_READ_TOKEN:
-Visit https://www.sanity.io/manage.
-Select your "NUZII ecommerce" project.
-Go to the "API" section.
-Click "Add API token" and create tokens with the appropriate permissions (e.g., "Editor" for write, "Viewer" for read).
-Copy the tokens into .env.local.
+```powershell
+Copy-Item .env.example .env.local
+```
 
-#### Clerk Variables:
+The example file is the reference for supported variables. Keep credentials out of version control.
 
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY and CLERK_SECRET_KEY: Sign up at https://clerk.dev, create an application, and find these keys in your Clerk dashboard.
+| Service | Configuration |
+| --- | --- |
+| Site | Set `NEXT_PUBLIC_BASE_URL` to `http://localhost:3000` locally. |
+| Sanity | Set `NEXT_PUBLIC_SANITY_PROJECT_ID`, `NEXT_PUBLIC_SANITY_DATASET`, and `NEXT_PUBLIC_SANITY_API_VERSION`. Supply `SANITY_API_TOKEN` with write permissions for orders and `SANITY_API_READ_TOKEN` for content reads and previews. |
+| Firebase | Fill in the `NEXT_PUBLIC_FIREBASE_*` values from your Firebase web app. Enable Google sign-in and authorize the development and production domains when using customer accounts. Customers can check out without signing in. |
+| Order links | Set `ORDER_LOOKUP_SECRET` to a long random value. Checkout uses it to sign order status links. |
+| iPay | Set `IPAY_ENV`, `IPAY_MERCHANT_TOKEN`, and `IPAY_SECRET` to enable gateway payments. Leave the credentials blank to develop with Cash on Delivery; choosing iPay without credentials prompts the customer to use COD. |
+| Email | Set `RESEND_API_KEY`, `EMAIL_FROM` using a verified sender domain, and `EMAIL_ADMIN_TO` to enable confirmations and admin notifications. Emails are skipped when unconfigured. |
 
-#### Stripe Variables:
+`FIREBASE_SERVICE_ACCOUNT_KEY` is listed in the example for the Firebase Admin helper in `lib/firebaseAdmin.ts`; it is separate from the public Firebase web app configuration.
 
-STRIPE_SECRET_KEY and STRIPE_WEBHOOK_SECRET: Register at https://stripe.com, create an account, and retrieve these from your Stripe dashboard.
-
-#### Sendbird Variable:
-
-SENDBIRD_APP_ID: Sign up at https://sendbird.com, create an application, and copy the Application ID from your Sendbird dashboard.
-
-#### Additional Notes:
-
-NEXT_PUBLIC_BASE_URL: Set to http://localhost:3000 for local development. Update to your live domain (e.g., https://NUZII.reactbd.com/) when deploying.
-Do not commit .env.local to version control, as it contains sensitive data. Next.js automatically excludes it via .gitignore.
-
-## 4. Optionally Import Demo Seed Data
-
-To populate your Sanity project with sample data (e.g., products or blog posts), run:
+Generate an order lookup secret with:
 
 ```bash
-npx sanity@latest dataset import seed.tar.gz
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 ```
 
-This step is optional and requires a seed.tar.gz file, which may be included with the template.
+### 3. Prepare content
 
-## 5. Run the Development Server
+Use your Sanity project ID and dataset in `.env.local`. This repository already includes the Studio configuration and content schemas, so use those when setting up your project.
 
-Launch the Next.js development server with:
+After starting the app, open `/admin/studio` to add categories, products, variants, stock, and homepage sections. No demo seed archive is included in this repository.
+
+### 4. Start the app
 
 ```bash
 npm run dev
-or
-yarn dev
-or
-pnpm dev
 ```
 
-## 6. Access the Application
+- Storefront: <http://localhost:3000>
+- Sanity Studio: <http://localhost:3000/admin/studio>
+- Catalog: <http://localhost:3000/category/all>
+- Checkout: <http://localhost:3000/checkout>
+- Customer order history: <http://localhost:3000/orders> (sign-in required)
 
-- Visit http://localhost:3000 in your browser to see the ecommerce website.
-- Go to http://localhost:3000/admin/studio to access the Sanity Studio and manage your content.
+## Payment setup
 
-## Customizing
+The iPay gateway uses the sandbox unless `IPAY_ENV` is set to `live`. Configure the merchant token and secret for the selected environment. In the merchant portal, enable the checksum (Additional Security) option and register this callback URL using your publicly reachable application domain:
 
-To tailor the template to your needs:
+```text
+https://<your-domain>/api/ipay/notify
+```
 
-- Modify files in the /app and /components directories.
-- Changes will reflect instantly due to Next.js’s hot reloading feature.
+Orders and stock reservations are recorded before the customer leaves for iPay. The verified server callback updates payment status. Cash on Delivery orders send confirmations immediately; iPay confirmations follow the recorded payment result.
+
+Sanity Studio separates orders into All Orders, Awaiting payment, and Needs attention. Review abandoned payments and pending settlements there; abandoned checkout stock is not released automatically.
+
+## Development commands
+
+| Command | Purpose |
+| --- | --- |
+| `npm run dev` | Start development with Turbopack. |
+| `npm run build` | Create a production build and run TypeScript checks. |
+| `npm start` | Serve the production build. |
+| `npm run typegen` | Extract the Sanity schema and regenerate `sanity.types.ts` after schema changes. |
+
+The existing `npm run lint` script invokes `next lint`, which is unavailable in Next.js 16. Use `npm run build` for the current validation workflow. There is no automated test suite configured.
+
+## Project structure
+
+```text
+app/(client)/         Storefront, checkout, order pages, and payment API routes
+app/admin/studio/     Embedded Sanity Studio
+actions/              Server actions, including order creation
+components/           Shared UI, homepage sections, catalog, and checkout
+context/              Firebase authentication provider
+constants/            Shipping options and shared configuration
+lib/                  Pricing, stock, payments, order links, and email helpers
+public/images/        Current brand and storefront artwork
+sanity/               Content schemas, queries, clients, and Studio structure
+store.ts              Persistent cart state
+wishlistStore.ts      Persistent wishlist state
+```
+
+Edit homepage presentation in `components/landing/`, catalog content in Sanity Studio, and shipping options in `constants/index.ts`. After changing schemas in `sanity/schemaTypes/`, run `npm run typegen` using the repository's installed Sanity CLI.
 
 ## License
 
-This template is a commercial product licensed under ReactBD Technologies.
-
-# Learn More
-
-Dive into the technologies used in this application:
-
-- Tailwind CSS - Utility-first CSS framework for styling [ https://tailwindcss.com/ ]
-- @clerk/nextjs - Clerk’s Next.js integration for authentication and user management [ https://clerk.com/docs ]
-- @headlessui/react - Unstyled, accessible UI components for React [ https://headlessui.com/ ]
-- @radix-ui - Accessible component from Radix UI [ https://www.radix-ui.com/ ]
-- @sanity/client - JavaScript client for interacting with Sanity APIs [ https://www.sanity.io/docs/client-libraries ]
-- @sanity/icons - Icon library for Sanity projects [ https://www.sanity.io/plugins/icons ]
-- @sanity/image-url - Utility for generating image URLs from Sanity assets [ https://www.sanity.io/docs/image-url ]
-- @sanity/preview-url-secret - Utility for secure preview URLs in Sanity [ https://www.sanity.io/docs/preview-url-secret ]
-- @sanity/vision - Debugging tool for Sanity queries [ https://www.sanity.io/plugins/vision ]
-- @types/lodash - TypeScript definitions for Lodash [ https://www.npmjs.com/package/@types/lodash ]
-- class-variance-authority - Utility for managing class variants in JavaScript/TypeScript [ https://cva.style/docs ]
-- clsx - Utility for constructing className strings conditionally [ https://github.com/lukeed/clsx ]
-- cmdk - Command menu component for React [ https://cmdk.paco.me/ ]
-- date-fns - Modern JavaScript date utility library [ https://date-fns.org/docs ]
-- dayjs - Lightweight date manipulation library [ https://day.js.org/docs ]
-- embla-carousel-react - Extensible carousel library for React [ https://www.embla-carousel.com/ ]
-- framer-motion - Animation library for React [ https://www.framer.com/motion/ ]
-- install - Utility for installing npm packages [ https://www.npmjs.com/package/install ]
-- lodash - Utility library for JavaScript [ https://lodash.com/docs ]
-- lucide-react - Beautiful & consistent icons for React [ https://lucide.dev/ ]
-- motion - Alias for Framer Motion, an animation library for React [ https://www.framer.com/motion/ ]
-- next - React framework for server-rendered applications [ https://nextjs.org/docs ]
-- next-sanity - Toolkit for integrating Sanity with Next.js [ https://www.sanity.io/docs/nextjs ]
-- react - JavaScript library for building user interfaces [ https://react.dev/ ]
-- react-dom - DOM-specific methods for React [ https://react.dev/reference/react-dom ]
-- react-hot-toast - Notifications library for React [ https://react-hot-toast.com/ ]
-- react-icons - Popular icons in React [ https://react-icons.github.io/react-icons/ ]
-- sanity - Content management platform [ https://www.sanity.io/docs ]
-- stripe - Payment processing platform [ https://stripe.com/docs ]
-- styled-components - CSS-in-JS styling solution [ https://styled-components.com/docs ]
-- tailwind-merge - Utility for merging Tailwind CSS classes [ https://github.com/dcastil/tailwind-merge ]
-- tailwindcss-animate - Animation utilities for Tailwind CSS [ https://github.com/jamiebuilds/tailwindcss-animate ]
-- zustand - State management for React [ https://zustand-demo.pmnd.rs/ ]
+The original template is a commercial product licensed under ReactBD Technologies.
